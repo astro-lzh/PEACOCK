@@ -4,6 +4,8 @@ PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with
 Complex Kinematics) models ultraviolet line transfer through clumpy
 galactic winds.
 
+[Read the documentation](https://peacock-rt.readthedocs.io/en/latest/).
+
 This repository contains the Sphinx documentation and the
 [transport source archive](docs/assets/PEACOCK_source_20261109_cuda14.zip).
 See [Citing PEACOCK](docs/citing.md) for the code and paper references.
