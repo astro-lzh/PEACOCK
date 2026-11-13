@@ -36,6 +36,7 @@ html_theme_options = {
 }
 html_static_path = ["_static"]
 html_css_files = ["peacock.css"]
+html_js_files = ["analytics.js"]
 html_favicon = "assets/favicon.svg"
 html_show_sourcelink = False
 html_copy_source = False
