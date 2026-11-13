@@ -1,0 +1,130 @@
+:root {
+  --peacock-teal: #176776;
+}
+
+body {
+  color: #25383f;
+}
+
+.wy-nav-content {
+  max-width: 1120px;
+  padding: 2.5rem 3.25rem;
+}
+
+.wy-nav-content-wrap {
+  background: #f4f7f8;
+}
+
+.rst-content h1,
+.rst-content h2,
+.rst-content h3,
+.rst-content h4 {
+  color: #203c45;
+}
+
+.rst-content h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.rst-content h2 {
+  margin-top: 2.5rem;
+}
+
+.rst-content p,
+.rst-content li {
+  line-height: 1.7;
+}
+
+.rst-content a {
+  color: var(--peacock-teal);
+}
+
+.rst-content a:hover {
+  color: #0b4653;
+}
+
+.rst-content figure {
+  margin: 1.75rem 0;
+}
+
+.rst-content figcaption {
+  color: #52666d;
+  font-size: 0.92rem;
+}
+
+.rst-content img {
+  height: auto;
+}
+
+.rst-content .home-transport {
+  display: block;
+  width: 360px;
+  max-width: 100%;
+  margin: 1.25rem auto;
+}
+
+.rst-content .spectrum-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.rst-content .spectrum-card {
+  padding: 1.25rem;
+  border: 1px solid #dfe7e9;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.rst-content .spectrum-card figure {
+  margin: 1rem 0;
+}
+
+.rst-content code.literal {
+  color: #175969;
+  background: #f0f5f6;
+  border-color: #dce6e8;
+}
+
+.rst-content div.math {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.65rem 0;
+}
+
+.rst-content .wy-table-responsive table td {
+  white-space: normal;
+  vertical-align: top;
+}
+
+.rst-content .wy-table-responsive table th {
+  white-space: normal;
+}
+
+.rst-content .model-parameters {
+  min-width: 720px;
+}
+
+.rst-content .model-parameters td:first-child {
+  white-space: nowrap;
+}
+
+.rst-content pre {
+  line-height: 1.6;
+}
+
+@media screen and (max-width: 768px) {
+  .wy-nav-content {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .rst-content h1 {
+    font-size: 1.9rem;
+  }
+
+  .rst-content .spectrum-grid {
+    grid-template-columns: 1fr;
+  }
+}

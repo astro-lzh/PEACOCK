@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="310" viewBox="0 0 320 310" fill="none">
+<defs><radialGradient id="halo"><stop stop-color="#eff7f3"/><stop offset=".8" stop-color="#f5f9f8"/><stop offset="1" stop-color="#fff"/></radialGradient><radialGradient id="star"><stop stop-color="#f2dcac"/><stop offset="1" stop-color="#e4b963"/></radialGradient><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="m1 1 7 4-7 4" stroke="#d28e32" stroke-width="1.4" fill="none"/></marker></defs>
+<circle cx="158" cy="150" r="132" fill="url(#halo)"/>
+<circle cx="158" cy="150" r="111" stroke="#d9e7e2" stroke-dasharray="3 5"/>
+<circle cx="158" cy="150" r="75" stroke="#e3eeea"/>
+<g fill="#d9eae5" stroke="#b5d2c6" stroke-width=".7"><circle cx="104" cy="76" r="10"/><circle cx="198" cy="70" r="7"/><circle cx="238" cy="114" r="12"/><circle cx="81" cy="152" r="9"/><circle cx="208" cy="153" r="13"/><circle cx="129" cy="193" r="11"/><circle cx="177" cy="231" r="9"/><circle cx="251" cy="188" r="7"/><circle cx="71" cy="213" r="6"/><circle cx="146" cy="94" r="6"/><circle cx="121" cy="139" r="7"/><circle cx="202" cy="205" r="6"/><circle cx="56" cy="117" r="5"/><circle cx="255" cy="74" r="5"/><circle cx="116" cy="247" r="5"/></g>
+<circle cx="158" cy="150" r="20" fill="#f9f2e4"/>
+<circle cx="158" cy="150" r="11" fill="url(#star)"/>
+<path d="M159 150 206 153 236 115 285 86" stroke="#d28e32" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="206" cy="153" r="2.5" fill="#d28e32"/><circle cx="236" cy="115" r="2.5" fill="#d28e32"/>
+<g font-family="Arial,sans-serif" font-size="9" fill="#73938b"><text x="158" y="121" text-anchor="middle">source</text><text x="210" y="175">gas clump</text><text x="278" y="108" text-anchor="middle">escape</text></g>
+<path d="M225 169 214 162" stroke="#a1bdb5" stroke-width=".6"/>
+</svg>
