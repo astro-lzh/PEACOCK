@@ -7,7 +7,7 @@ galactic winds.
 [Read the documentation](https://peacock-rt.readthedocs.io/en/latest/).
 
 This repository contains the Sphinx documentation and the
-[transport source archive](docs/assets/PEACOCK_source_20261109_cuda14.zip).
+[transport source archive](docs/assets/PEACOCK-1.0.zip).
 See [Citing PEACOCK](docs/citing.md) for the code and paper references.
 
 The editable documentation lives in `docs/`. It uses Sphinx, MyST Markdown
@@ -34,7 +34,23 @@ After building, open `site/index.html` to browse the documentation locally.
 
 ## Release citation
 
-The citation page uses the currently available public preprints. Update
-the main methods reference when its revised public record is available.
-Add the actual code release DOI, software authors and version after the
-release has been archived.
+Li, Z., & Gronke, M. (2026). *PEACOCK: Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics* (Version 1.0) [Computer software]. Zenodo. [https://doi.org/10.5281/zenodo.24206426](https://doi.org/10.5281/zenodo.24206426).
+
+Machine-readable metadata are provided in [CITATION.cff](CITATION.cff).
+See [Citing PEACOCK](docs/citing.md) for the methods and original `tlac`
+references.
+
+## License
+
+PEACOCK is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option)
+any later version (SPDX: `GPL-3.0-or-later`). See [LICENSE](LICENSE) for the
+complete terms.
+
+This license applies to the PEACOCK software. Third-party components and
+reference data retain their own notices and terms. In particular, the
+bundled INI parser remains available under its upstream MIT license.
+
+Bundled research figures and reference documents retain their existing
+rights and attribution; they are not relicensed by the software license.

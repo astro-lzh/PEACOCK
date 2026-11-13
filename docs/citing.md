@@ -7,11 +7,25 @@ scientific interpretation.
 
 ## Code release
 
-The public code release will have a DOI and a software citation identifying
-its authors and version. Cite the DOI for the specific release used in your
-analysis, and record that version with your results. The release DOI and
-software citation will be added here when available. For an unreleased
-snapshot, record the source version or commit alongside the methods citation.
+Li, Z., & Gronke, M. (2026). *PEACOCK: Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics* (Version 1.0) [Computer software]. Zenodo. [https://doi.org/10.5281/zenodo.24206426](https://doi.org/10.5281/zenodo.24206426).
+
+Cite this DOI when using PEACOCK 1.0 and record the version with your
+results. The code is available under the **GNU General Public License,
+version 3 or later (`GPL-3.0-or-later`)**. Third-party components retain
+their own notices and terms.
+
+```bibtex
+@software{li_gronke_peacock_1_0,
+  author    = {Li, Zhihui and Gronke, Max},
+  title     = {{PEACOCK}: Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics},
+  year      = {2026},
+  month     = nov,
+  version   = {1.0},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.24206426},
+  url       = {https://doi.org/10.5281/zenodo.24206426}
+}
+```
 
 (li-2026a)=
 ## Main methods paper
