@@ -16,6 +16,9 @@ A central source illuminates a clumpy outflow. Clumps have internal Doppler broa
 
 The baseline wind in {ref}`Li+2026a <li-2026a>` puts equal-size spherical clumps between an inner and outer halo radius. Their number density falls as $r^{-2}$, the outer radius is ten times the inner radius, and each ion’s column through one clump radius is constant with distance. A compact central source supplies the photons. The gas between clumps is transparent to the modeled lines and dust.
 
+To apply a velocity law to a fixed cloud catalogue, follow the
+[C II configuration example](configuring-a-peacock-simulation.md#switch-from-a-constant-outflow-to-a-t15-wind).
+
 ### FCC clump placement
 
 A face-centered cubic lattice supplies candidate clump centers. Each radial shell receives a whole-number quota calculated from the target density. The volume filling factor sets the total number of clumps. This is a way to place separate spheres while reproducing a prescribed radial distribution.

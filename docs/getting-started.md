@@ -128,6 +128,8 @@ The [output guide](outputs.md) explains the packet files, normalization and aper
 
 Copy `examples/cii/quickstart.cfg` to `my-cii.cfg` and edit the copy. These are the main
 settings in this example; lengths in the configuration are in parsecs.
+For the meaning of every entry and a worked change from constant speed to an
+accelerating wind, see [Configuring a PEACOCK simulation](configuring-a-peacock-simulation.md).
 
 | Physical setting | Configuration entry | Example value | Unit |
 | --- | --- | --- | --- |

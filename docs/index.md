@@ -46,6 +46,7 @@ Install PEACOCK, run a C II example on a CPU or GPU, and turn the escaping photo
 
 choosing-a-line-and-an-observable
 models
+configuring-a-peacock-simulation
 examples
 fitting
 ```
