@@ -1,8 +1,9 @@
 (gpu-transport)=
-# GPU setup and advanced workflows
+(gpu-setup-and-advanced-workflows)=
+# GPU and cluster runs
 
 For your first C II spectrum, follow the Linux or Windows commands in
-[Getting started](getting-started.md#nvidia-gpu). Use this page to look up your
+[the C II tutorial](getting-started.md#nvidia-gpu). Use this page to look up your
 GPU target, configure an existing CUDA Toolkit, or [submit a single-GPU Slurm job](#run-c-ii-on-one-gpu-with-slurm).
 
 (gpu-requirements)=
@@ -97,7 +98,7 @@ ls run/cii-12345/spectrum.*           # List the results after the job finishes
 Open **`run/cii-12345/spectrum.png`** to view the line profile. The same directory
 contains `spectrum.csv` with the binned flux and its sampling uncertainty, and
 `spectrum.json` with the plotting settings. Compare your profile with the
-[tutorial spectrum](examples.md#start-with-a-c-ii-simulation).
+{ref}`tutorial spectrum <tutorial-spectrum>`.
 
 To reuse the first job's build on the same GPU type with the same software environment,
 pass its build directory as a second argument. The next job writes a fresh run directory:

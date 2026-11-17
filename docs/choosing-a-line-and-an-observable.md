@@ -92,3 +92,6 @@ Choose the normalization from the source in `resolved.cfg` and the measurement y
 want. When comparing with an observation, match the projected aperture, velocity zero,
 spectral resolution and bin edges, and apply the same normalization to model and data.
 See [Spectra and output files](outputs.md) for the velocity convention and file formats.
+
+To explore what shapes the profile, [trace a photon through the clumpy wind](models.md)
+or [change the wind speed law and compare two spectra](configuring-a-peacock-simulation.md).

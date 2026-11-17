@@ -1,4 +1,5 @@
-# Common questions
+(common-questions)=
+# Troubleshooting
 
 Start with the [first C II simulation](getting-started.md) and its supplied configuration.
 The checks below address common installation and run problems.

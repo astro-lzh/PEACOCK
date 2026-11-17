@@ -1,21 +1,19 @@
-# Getting started
+(getting-started)=
+# Run your first C II simulation
 
-Run a C II simulation and turn its escaping photons into a spectrum. The same
-configuration and clump catalogue work on the CPU and on an NVIDIA GPU.
+Use PEACOCK to follow photons through a clumpy wind and plot the C II spectrum
+that emerges. Choose a CPU or an NVIDIA GPU. Both use the same cloud catalogue,
+model configuration and plotting tool.
 
 (installation-source)=
-
 (installation-dependencies)=
-## 1. Install PEACOCK and open the source folder
+(install-peacock-and-open-the-source-folder)=
+## 1. Open the source folder
 
-Download and extract the [source archive](download.md). In your terminal, change into
-the extracted `PEACOCK` directory containing `peacock.py`. If you are in its parent
-directory, use `cd PEACOCK`. Follow the [installation instructions](installation.md)
-for your operating system, including the CUDA dependencies for a GPU run.
-
-On Linux and macOS, keep that environment active when using `python3`. In Windows
-PowerShell, use `.\.venv\Scripts\python.exe` in place of `python3`; complete Windows
-commands for both backends are included below.
+Start in the extracted `PEACOCK` directory containing `peacock.py`, with the environment
+from [Download and install](installation.md). On Linux or macOS, activate it with
+`. .venv/bin/activate`. The Windows PowerShell commands below call the environment's
+Python directly.
 
 ## 2. Choose a spectral line
 
@@ -24,6 +22,8 @@ List the available line identifiers:
 ```bash
 python3 peacock.py lines
 ```
+
+In Windows PowerShell, use `.\.venv\Scripts\python.exe peacock.py lines`.
 
 This tutorial uses `CII1334`. It includes the coupled C II 1334/1335 transitions and uses
 C II 1334.53 Å as the reference wavelength. Selecting a line loads its atomic data and
@@ -80,7 +80,10 @@ $ucrt = "C:/msys64/ucrt64"
 .\.venv\Scripts\python.exe peacock.py run --line CII1334 --backend cuda --output run/cii-cuda
 ```
 
+(tutorial-spectrum)=
 ## 4. Make the spectrum
+
+Use the command for the operating system and backend you used to run the simulation.
 
 For a CPU run, use
 
@@ -116,8 +119,10 @@ of one.
 :alt: C II spectrum from the tutorial run, with velocity on the horizontal axis and flux relative to the injected continuum on the vertical axis.
 :width: 100%
 
-With 100,000 photons and a 150 km s⁻¹ radial outflow, the deepest C II absorption is centered at −150 km s⁻¹, where the flux falls to 0.635 of the incident continuum. The shaded band shows approximate Monte Carlo sampling uncertainty.
+With 100,000 photons and a 150 km s⁻¹ radial outflow, the reference CPU run has its deepest absorption at −150 km s⁻¹. The flux in this bin is 0.635 of the incident continuum. The shaded band shows approximate Monte Carlo sampling uncertainty.
 ```
+
+{download}`Download the reference spectrum with flux, packet counts and sampling uncertainties (CSV) <assets/research/cii-100k-v150-spectrum.csv>`
 
 Independent runs sample different photon paths. When comparing CPU and GPU spectra, use
 the same bins and aperture and compare any difference with the sampling uncertainties.
@@ -126,46 +131,28 @@ The [output guide](outputs.md) explains the packet files, normalization and aper
 (installation-settings)=
 ## 5. Change the physical model
 
-Copy `examples/cii/quickstart.cfg` to `my-cii.cfg` and edit the copy. These are the main
-settings in this example; lengths in the configuration are in parsecs.
-For the meaning of every entry and a worked change from constant speed to an
-accelerating wind, see [Configuring a PEACOCK simulation](configuring-a-peacock-simulation.md).
+To try a faster wind, copy `examples/cii/quickstart.cfg` to `my-cii.cfg` in the
+source directory. Under `[grid]`, change the second entry of `cloud_motion_params`
+from `150` to `250` and save the file.
 
-| Physical setting | Configuration entry | Example value | Unit |
-| --- | --- | --- | --- |
-| Launched photons | `[run] nphot` | `100000` | Count |
-| Inner and outer clump placement bounds | `[grid] cloud_rin`, `cloud_rout` | `(100)`, `(950)` | pc |
-| Clump radius | `[cloud1] size`, `rmax` | `50`, `50` | pc |
-| Clump volume filling factor | `[grid] cloud_filling_factors` | `(0.1)` | Dimensionless |
-| Clump gas temperature | `[cloud1] temperature` | `10000` | K |
-| C II reference lower-level column across one clump radius | `[cloud1] hydrogen` | `c 3e15` | cm⁻² |
-| Random velocity dispersion and radial outflow | `[grid] cloud_motion_params` | `((25,150,0,0,0,0))` | km s⁻¹ for the first two entries |
-| Excited-to-ground lower-level population ratio | `[emission] cii_ratio_21` | `0.3` | Dimensionless |
-| Injected continuum velocity half-width | `[emission] frequency_param` | `600` | km s⁻¹ |
+```ini
+cloud_motion_params = ((25,250,0,0,0,0))
+```
 
-The motion setting `cloud_motion_modes = ((2,1))` combines a Gaussian random velocity
-with a constant radial outflow. The first two motion parameters therefore mean
-25 km s⁻¹ dispersion in each Cartesian component and 150 km s⁻¹ outward speed. For this
-C II configuration, `hydrogen = c 3e15` sets the C II column in the reference lower level.
-The source uses `frequency_mode = 3`, so its continuum spans −600 to +600 km s⁻¹.
-The inner placement bound applies to clump centers, while complete clumps fit within the
-outer bound. The input column is density times one clump radius; the column through a
-clump diameter is twice this value.
-
-The supplied catalogue fixes the clump positions. If you change the clump radius, shell
-boundaries or filling factor, prepare a matching complete catalogue as described in the
-source folder's `docs/cloud-model.md`. The [physical model](models.md) explains what
-these quantities mean.
-
-Run the edited configuration with the same catalogue when its geometry is unchanged:
+This keeps the random velocity dispersion at 25 km/s per Cartesian component and
+increases the radial outflow to 250 km/s. Reuse the compiled program and original
+clump catalogue, giving the new spectrum its own directory.
 
 ```bash
 python3 peacock.py run --line CII1334 --backend cpu --config my-cii.cfg --clump-file examples/cii/quickstart-clumps.txt --output run/my-cii
 python3 tools/plot_spectrum.py run/my-cii --output run/my-cii/spectrum.png
 ```
 
-For a GPU run, select `--backend cuda` and choose a different output directory.
-The optional `--nphot` argument overrides the packet count in the configuration.
+For a GPU run, select `--backend cuda`. In Windows PowerShell, replace `python3` with
+`.\.venv\Scripts\python.exe`. To double the photon count in a later run, add
+`--nphot 200000` to the run command and use a new output directory.
+[Configuring a PEACOCK simulation](configuring-a-peacock-simulation.md)
+explains each input and shows how to replace the constant speed with an accelerating wind.
 
 ## Keep a run reproducible
 
@@ -174,5 +161,5 @@ for photon sampling. Keep the geometry seed and catalogue fixed when comparing t
 independent transport calculations, and change the photon seed between them. Keep each
 run's resolved configuration, atomic table, packet output and run summary together.
 
-Next, [inspect the outputs](outputs.md), [explore the examples](examples.md), or use
-[troubleshooting](troubleshooting.md) if a command fails.
+Next, [choose a line and an observable](choosing-a-line-and-an-observable.md) to
+model a different transition or measure the spectrum through a smaller aperture.

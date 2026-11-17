@@ -1,6 +1,8 @@
-# Download
+(download)=
+# Software releases
 
-Get the PEACOCK transport engine and bundled examples.
+Use this page to retrieve a particular version of PEACOCK. For a first installation,
+[download the current version and set up your computer](installation.md).
 
 (source-download)=
 ## PEACOCK 1.0.2
@@ -11,8 +13,6 @@ The tutorial uses this archive. Its C II example follows 100,000 photons through
 clumps moving outward at 150 km/s. It includes the configuration, a catalogue of 685
 clumps, and a tool for plotting the resulting spectrum.
 
-Extract the archive and follow the [installation instructions](installation.md) and
-[first simulation](getting-started.md).
 See [Citing PEACOCK](citing.md) for the software and paper references.
 
 ## Earlier versions

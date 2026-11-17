@@ -1,11 +1,13 @@
-# Installation
+(installation)=
+# Download and install
 
-Install the tools below once, then follow [your first C II simulation](getting-started.md).
-The same model configuration is used whether photons are transported on a CPU or an
-NVIDIA GPU.
+{download}`Download PEACOCK 1.0.2 (source ZIP) <assets/PEACOCK-1.0.2.zip>` and extract it.
+Open a terminal in the extracted `PEACOCK` directory containing `peacock.py`.
+The archive includes the source code, the C II example and the plotting tool.
 
-Start by extracting the [source ZIP](download.md). Run the commands from the extracted
-`PEACOCK` directory, which contains `peacock.py`.
+Follow the instructions for [Linux](#linux-debian-or-ubuntu), [macOS](#macos) or
+[Windows](#windows). For an NVIDIA GPU on Linux or Windows, also complete the
+[CUDA setup](#add-gpu-support-on-linux-or-windows).
 
 ## What to install
 
@@ -35,6 +37,7 @@ python3 -m pip install numpy scipy matplotlib
 
 Keep this environment active when building, running, and plotting. In a new terminal,
 return to the source directory and run `. .venv/bin/activate` again.
+You can now [run C II on the CPU](getting-started.md#cpu) or [add GPU support](#add-gpu-support-on-linux-or-windows).
 
 (install-macos)=
 ## macOS
@@ -54,8 +57,7 @@ python3 -m pip install numpy scipy matplotlib
 If Xcode reports that its command-line tools are already installed, continue with the
 Homebrew command. PEACOCK finds GSL through the `gsl-config` program installed by Homebrew.
 
-Use CPU transport on macOS. The CUDA instructions below require a supported NVIDIA GPU
-on Linux or Windows.
+Continue with [your first C II simulation on the CPU](getting-started.md#cpu).
 
 (install-windows)=
 ## Windows
@@ -205,4 +207,4 @@ the [first run](getting-started.md).
 ## Continue to the first simulation
 
 Follow the [C II walkthrough](getting-started.md) to build, run, and plot the same physical
-model. If installation stops with an error, see [Common questions](troubleshooting.md).
+model. If installation stops with an error, see [Troubleshooting](troubleshooting.md).

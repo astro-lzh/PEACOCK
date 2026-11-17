@@ -2,6 +2,17 @@
 
 PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics) is a three-dimensional Monte Carlo radiative transfer code for ultraviolet lines. It follows photons through gas clumps to predict how gas coverage, gas motion, dust and the source spectrum shape observed absorption and emission.
 
+(overview-start)=
+(use-peacock)=
+## Your first spectrum
+
+1. [Download and install PEACOCK](installation.md) on Linux, macOS or Windows.
+2. [Run the C II tutorial](getting-started.md) to build the code, launch 100,000 photons and plot the escaping spectrum.
+3. [Choose a line and an observable](choosing-a-line-and-an-observable.md) to try a different transition or extract a smaller aperture from your first run.
+
+(overview-research)=
+## UV line formation in clumpy winds
+
 ```{figure} assets/transport.svg
 :alt: Schematic photon paths through gas clouds around a central source.
 :class: home-transport
@@ -9,9 +20,6 @@ PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex K
 
 Photon transport in a clumpy wind
 ```
-
-(overview-research)=
-## UV line formation in clumpy winds
 
 ### Model bulk outflow and random gas motions
 
@@ -30,44 +38,44 @@ Different radial structures can produce similar integrated spectra. Compare tran
 
 Radiative transfer libraries and a neural-network surrogate make it practical to explore the parameter space of a spectral fit. Direct transport at the fitted parameters provides a comparison with the surrogate prediction.
 
-[See the fitting workflow](fitting.md).
-
-(overview-start)=
-## Use PEACOCK
-
-Install PEACOCK, run a C II example on a CPU or GPU, and turn the escaping photons into a spectrum. Then [choose a line and an observable](choosing-a-line-and-an-observable.md) or configure your own wind.
-
-[Get started](getting-started.md), [check installation for your computer](installation.md), [explore the physical model](models.md) or [see example spectra](examples.md).
+[Explore observed line profiles](examples.md#example-spectra) or [follow the C II fit to J1253−0312](fitting.md).
 
 ```{toctree}
-:caption: Model and examples
+:caption: Get started
 :maxdepth: 2
 :hidden:
 
+installation
+getting-started
 choosing-a-line-and-an-observable
+```
+
+```{toctree}
+:caption: Model the wind
+:maxdepth: 2
+:hidden:
+
 models
 configuring-a-peacock-simulation
+```
+
+```{toctree}
+:caption: Examples and fitting
+:maxdepth: 2
+:hidden:
+
 examples
 fitting
 ```
 
 ```{toctree}
-:caption: Install and run
+:caption: Reference
 :maxdepth: 2
 :hidden:
 
-getting-started
-installation
-gpu
 outputs
+gpu
 troubleshooting
 download
-```
-
-```{toctree}
-:caption: Citing PEACOCK
-:maxdepth: 2
-:hidden:
-
 citing
 ```
