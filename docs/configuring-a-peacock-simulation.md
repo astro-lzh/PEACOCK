@@ -70,7 +70,7 @@ gives the $\alpha=2$ case.
 
 ## Run both winds and compare the spectra
 
-Start in the extracted [PEACOCK 1.0.3 source directory](download.md) with the CPU build
+Start in the extracted [PEACOCK 1.0.4 source directory](download.md) with the CPU build
 from [Getting started](getting-started.md#cpu). Save `cii-t15.cfg` alongside
 `peacock.py`. In a Bash shell, run each configuration with the **same catalogue** and
 give it a fresh output directory:
@@ -98,7 +98,7 @@ python3 tools/plot_spectrum.py run/cii-t15 --output run/cii-t15/spectrum.png
 
 The accelerating wind produces a shallower absorption trough farther to the blue.
 With 20 km/s bins, the minimum shifts from −150 km/s in the constant wind to
-−170 km/s in the T15 wind, and its flux rises from 0.654 to 0.725 times the
+−170 km/s in the T15 wind, and its flux rises from 0.695 to 0.786 times the
 incident continuum.
 ```
 
@@ -139,7 +139,7 @@ one clump. Radii in these two configuration sections are in pc.
 | `ncells` | `(1,1,1)` | `(1,1,1)` | One cell in each spherical coordinate (radius, polar angle and azimuth). The halo cell contains the individual clumps. |
 | `filling_mode`, `rmin`, `rmax` | `1`, `0`, `1000` | `1`, `0`, `50` | Fill one radial interval with the properties below. In this example the interval spans the full radius of each grid. |
 | `temperature` | `10000` | `10000` | Gas temperature in K. The clump temperature sets the thermal contribution to the line width. |
-| `hydrogen` | `n 0` | `c 3e15` | In this C II run, `n` supplies the reference lower-level number density in cm⁻³ and `c` supplies its radial column in cm⁻². The background density is zero. Each clump has a center-to-edge column of 3 × 10¹⁵ cm⁻², or 6 × 10¹⁵ cm⁻² through its diameter. |
+| `hydrogen` | `n 0` | `c 5e14` | In this C II run, `n` supplies the reference lower-level number density in cm⁻³ and `c` supplies its radial column in cm⁻². The background density is zero. Each clump has a ground-level C II column of 5 × 10¹⁴ cm⁻² from center to edge, or 1 × 10¹⁵ cm⁻² through its diameter. |
 | `dust` | `n 0` | `n 0` | Dust number density in cm⁻³. Both the clumps and the space between them are dust-free. |
 | `velocity_mode`, `velocity_params` | `1`, `(0)` | `0`, omitted | The background has constant radial speed 0 km/s. The clump gas has zero internal bulk motion in its own frame. The motion of each whole clump is set separately below. |
 | `luminosity_mode` | `1` | `1` | Selects a central source when emission is sampled from cell luminosities. The radial exponential source in this example samples positions directly, so this setting has no effect here. |

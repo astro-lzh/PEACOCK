@@ -10,7 +10,7 @@ observing aperture or measure the line relative to its continuum.
 Pass the name in the middle column to `--line`. This loads the atomic data and
 scattering rules. Some choices model several transitions together. For example,
 `CIV1548` produces both components of the doublet. The reference wavelength sets
-zero on the velocity axis. The table lists the lines in [PEACOCK 1.0.3](download.md).
+zero on the velocity axis. The table lists the lines in [PEACOCK 1.0.4](download.md).
 
 | Spectrum of interest | `--line` | What the calculation includes |
 | --- | --- | --- |
@@ -52,12 +52,12 @@ halo radius. For a circular observing aperture, convert its angular radius to pa
 the galaxy's distance and pass that value to `--aperture-pc`.
 
 ```{figure} assets/research/cii-100k-v150-full-vs-250pc.png
-:alt: Full-aperture and 250 pc C II spectra have nearly identical blue absorption troughs. The 250 pc aperture collects less red emission, with the largest difference near +310 km/s.
+:alt: Full-aperture and 250 pc C II spectra have nearly identical blue absorption troughs. The 250 pc aperture collects less red emission, with the largest difference near +330 km/s.
 :width: 100%
 
 The blue absorption trough stays at −150 km/s in both spectra. The smaller aperture
-collects less red emission, with the largest difference near +310 km/s. There the
-flux falls from about 1.12 to 0.99 times the incident continuum. The lower panel
+collects less red emission, with the largest difference near +330 km/s. There the
+flux falls from about 1.17 to 1.09 times the incident continuum. The lower panel
 shows the light missed by the smaller aperture.
 ```
 
@@ -65,7 +65,7 @@ shows the light missed by the smaller aperture.
 
 To reproduce the comparison, start from the [C II tutorial](getting-started.md)
 run with a 150 km/s outflow. The full aperture includes all 100,000 escaping
-photons, and 97,499 fall inside 250 pc. The commands below average over all escape
+photons, and 98,202 fall inside 250 pc. The commands below average over all escape
 directions, use 20 km/s bins and normalize to the injected continuum. Run them
 from the PEACOCK source directory, replacing `run/cii` with your run directory.
 

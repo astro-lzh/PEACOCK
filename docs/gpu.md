@@ -42,7 +42,7 @@ as the RTX 5090 and requires CUDA 12.8 or later.
 ## Run C II on one GPU with Slurm
 
 Slurm is the scheduler that reserves a GPU for your job. The script runs the
-[C II tutorial](getting-started.md#nvidia-gpu) from [PEACOCK 1.0.3](download.md)
+[C II tutorial](getting-started.md#nvidia-gpu) from [PEACOCK 1.0.4](download.md)
 and writes the spectrum when the calculation finishes. It uses the same 100,000
 photons and 150 km/s wind as the tutorial.
 

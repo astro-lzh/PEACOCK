@@ -117,9 +117,10 @@ and `spectrum.json` records how they were plotted.
 :alt: C II spectrum from the tutorial run, with velocity on the horizontal axis and flux relative to the injected continuum on the vertical axis.
 :width: 100%
 
-In the reference CPU run ($n_2/n_1=0.1$), the absorption is deepest near
-−150 km/s, where the flux is about 65% of the incident continuum. The shaded band shows the approximate
-uncertainty from sampling a finite number of photons.
+The deepest absorption in the CPU run is near −150 km/s, where the flux is about
+70% of the incident continuum. Each clump has a center-to-edge ground-level C II
+column of $5\times10^{14}\,\mathrm{cm}^{-2}$ and $n_2/n_1=0.1$. The shaded band
+shows the approximate uncertainty from sampling a finite number of photons.
 ```
 
 {download}`Download the reference spectrum with flux, packet counts and sampling uncertainties (CSV) <assets/research/cii-100k-v150-spectrum.csv>`

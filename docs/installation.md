@@ -1,7 +1,7 @@
 (installation)=
 # Download and install
 
-{download}`Download PEACOCK 1.0.3 (source ZIP) <assets/PEACOCK-1.0.3.zip>` and extract it.
+{download}`Download PEACOCK 1.0.4 (source ZIP) <assets/PEACOCK-1.0.4.zip>` and extract it.
 Open a terminal in the extracted `PEACOCK` directory containing `peacock.py`.
 The archive includes the source code, the C II example and the plotting tool.
 
