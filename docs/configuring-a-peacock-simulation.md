@@ -7,12 +7,28 @@ same clump positions, C II column density and random motions in both calculation
 
 ## Switch from a constant outflow to a T15 wind
 
-The original configuration gives every clump a radial speed of 150 km/s. In
-the T15 model the radial motion starts at rest at the launch radius, then builds
-up as the clump travels outward. Both winds have a random velocity dispersion of
-25 km/s along each of the three axes.
+The constant wind assigns every clump a radial speed of 150 km/s. In the T15
+wind, a clump starts with zero radial speed and accelerates when the outward
+push from the galaxy exceeds the inward pull of gravity. Light from a steady,
+compact source spreads over an area proportional to $r^2$, so a cloud of fixed
+mass and cross section that absorbs a fixed fraction of the incident light
+experiences an outward acceleration proportional to
+$r^{-2}$. For a physical example of radiation pressure on dusty clouds, see
+[Thompson et al. (2015), §2.4](https://doi.org/10.1093/mnras/stv246).
 
-To switch winds, copy `examples/cii/quickstart.cfg` to `cii-t15.cfg` and replace
+PEACOCK lets the outward acceleration fall as $r^{-\alpha}$ so you can explore
+how far from the galaxy the driving remains effective. An isothermal halo has a
+constant circular speed $v_{\rm c}$, so its inward acceleration has magnitude
+$v_{\rm c}^2/r$. For $\alpha>1$, driving fades faster than gravity. A clump can
+gain speed near the galaxy, reach its maximum speed where the two accelerations
+balance, and slow down farther out. See [Steidel et al. (2010), Eq. 14](https://doi.org/10.1088/0004-637X/717/1/289)
+for power-law driving and [Heckman et al. (2015), Eq. 4](https://doi.org/10.1088/0004-637X/809/2/147)
+for the inverse-square case with isothermal gravity.
+
+In this dust-free C II example, the wind law sets the clump velocities before
+PEACOCK transports the line photons. Both winds use a random velocity dispersion
+of 25 km/s along each axis. To switch winds, copy
+`examples/cii/quickstart.cfg` to `cii-t15.cfg` and replace
 these two lines in `[grid]`, or download the
 {download}`complete T15 configuration <assets/examples/cii/cii-t15.cfg>`.
 
@@ -31,7 +47,7 @@ and use the remaining five entries for the wind law.
 | T15 entry, in file order | Example value | Meaning |
 | --- | --- | --- |
 | $v_0$ | 80 km/s | Velocity scale multiplying the square root below. |
-| $R$ | 10 | Dimensionless coefficient of the outward driving term. |
+| $R$ | 10 | Sets the strength of the driving. In this velocity law the outward acceleration at launch is $(\alpha-1)R$ times gravity. |
 | $\alpha$ | 1.5 | Dimensionless exponent controlling how the outward acceleration declines with radius. |
 | $R_{\min}$ | 100 pc | Launch radius, where the radial wind starts at zero. |
 | $R_{\max}$ | 950 pc | Outer radius through which the wind law applies. |
@@ -43,7 +59,9 @@ $$
 v_{\rm wind}(r)=v_0\sqrt{\max\!\left(0,\;R[1-x^{1-\alpha}]-\ln x\right)}.
 $$
 
-Here the radial speed reaches 120 km/s at 200 pc and 158 km/s at 500 pc.
+For the example values, the outward acceleration at launch is five times
+gravity. The clumps are still accelerating at the outer edge of the modeled
+shell. Their radial speed reaches 120 km/s at 200 pc and 158 km/s at 500 pc.
 Outside the wind interval the clump retains its random motion. Clump placement
 and wind acceleration each have their own inner and outer radii. This example
 uses the same boundaries for both, as in the release's `docs/cloud-model.md`.

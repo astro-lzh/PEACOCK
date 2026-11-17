@@ -72,7 +72,9 @@ At radius $r$, add the outward bulk velocity along the radial unit vector $\hat{
 
 ### Radial acceleration and outflow speed
 
-The wind law starts with a clump at rest at the inner edge of the halo, $R_{\mathrm{in}}$. An outward acceleration $A/r^2$ pushes the clump away from the galaxy, while halo gravity pulls it back. {ref}`Li+2026a <li-2026a>` assumes an isothermal halo with constant circular speed $v_{\mathrm c}$, so the enclosed mass $M(r)=v_{\mathrm c}^2r/G$ makes the inward acceleration $v_{\mathrm c}^2/r$.
+The baseline wind in {ref}`Li+2026a <li-2026a>` starts a clump with zero radial speed at the inner edge of the halo, $R_{\mathrm{in}}$. Momentum from a steady, compact central source spreads over an area that grows as $r^2$. For a clump of fixed mass and effective cross section, this gives an outward acceleration $A/r^2$. For the case of a dusty cloud accelerated by radiation pressure, see [Thompson et al. (2015), §2.4](https://doi.org/10.1093/mnras/stv246).
+
+The halo pulls the clump inward. For an isothermal mass distribution the circular speed $v_{\mathrm c}$ is constant, so the enclosed mass grows as $M(r)=v_{\mathrm c}^2r/G$. The inward acceleration therefore falls as $v_{\mathrm c}^2/r$, more slowly than the outward driving. This competition gives the radial speed profile derived by [Heckman et al. (2015), Eqs. 4–5](https://doi.org/10.1088/0004-637X/809/2/147). To vary the driving exponent, see the [C II configuration example](configuring-a-peacock-simulation.md#switch-from-a-constant-outflow-to-a-t15-wind).
 
 To get speed as a function of radius, write the time derivative as $\mathrm{d}v/\mathrm{d}t=v\,\mathrm{d}v/\mathrm{d}r$, where $v$ is the radial bulk speed. Integrating from the launch radius gives the speed law below.
 
@@ -388,7 +390,7 @@ Table 2 of {ref}`Li+2026a <li-2026a>` lists the parameters for the clumpy wind, 
   - Acceleration parameter
   - Dimensionless
   - Radially varying wind
-  - Ratio of outward acceleration to gravity at the launch radius.
+  - Ratio of outward acceleration to gravity at launch for the baseline inverse-square driving law ($\alpha=2$).
 * - $\tau_{\mathrm{d,cl}}$
   - Clump dust optical depth
   - Dimensionless
