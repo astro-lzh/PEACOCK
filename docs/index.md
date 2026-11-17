@@ -26,17 +26,20 @@ PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex K
 Photon transport in a clumpy wind
 ```
 
-### Model bulk outflow and random gas motions
+(model-bulk-outflow-and-random-gas-motions)=
+### Connect gas motions to the absorption profile
 
-Set the speed at which clumps move away from the galaxy and the spread in their individual velocities. Gas motions inside each clump can broaden the line further.
+Clumps moving toward the observer on the near side of a galaxy can absorb its light at blueshifted wavelengths. Random velocities give individual clumps different Doppler shifts, while thermal and turbulent motions broaden each clump’s own absorption profile.
 
-### Model absorption and re-emission together
+(model-absorption-and-re-emission-together)=
+### Trace resonant scattering and fluorescence
 
-A photon absorbed by a clump can be re-emitted in the same transition or, for some ions, at a different wavelength through fluorescence. PEACOCK follows both through the same wind.
+Resonant scattering can redirect light into the line of sight and partly fill an absorption trough. Si II, for example, can re-emit light absorbed at 1526.7 Å in that same transition or in a fluorescent line at 1533.4 Å.
 
-### Assess what line profiles reveal about the wind
+(assess-what-line-profiles-reveal-about-the-wind)=
+### Compare wind models across lines and apertures
 
-Different arrangements of clumps can produce similar spectra when the whole halo is observed at once. Compare several transitions or vary the observing aperture to see which wind models still agree with the data.
+Different winds can produce similar spectra when light from the whole halo is collected. Compare another transition or narrow the aperture to test whether the models still predict similar profiles. In the [C II aperture example](choosing-a-line-and-an-observable.md#how-aperture-size-affects-the-c-ii-line-profile), the smaller aperture collects less red emission from the halo, while the blue absorption trough changes little.
 
 (overview-fitting)=
 ## Fit observed spectra
