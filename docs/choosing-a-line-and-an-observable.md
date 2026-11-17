@@ -37,14 +37,19 @@ spectrum and a plotting window wide enough for the components you want to study.
 | The projected aperture, velocity bins, or displayed velocity range | **Replot the saved packets.** The escape position, direction and frequency already determine which photons enter each bin. |
 | Continuum-normalized flux or unit-area line shape | **Replot the saved packets** using the normalization appropriate for the injected source and the quantity you want to compare. |
 
+(how-much-c-ii-light-falls-outside-a-250-pc-aperture)=
 (cii-aperture-comparison)=
-## How much C II light falls outside a 250 pc aperture?
+## How aperture size affects the C II line profile
 
-Both curves below use the same 100,000 photons from the [C II tutorial](getting-started.md),
-with clumps moving radially outward at 150 km/s. The full aperture includes every
-escaping ray. The smaller aperture keeps rays that pass within a projected radius of
-250 pc of the source. Both average over escape directions and use the same 20 km/s bins
-and the same injected continuum.
+A small aperture centered on the galaxy captures the compact continuum source but can miss
+C II photons scattered to larger projected radii. To illustrate this effect, we compare
+the full halo with a circular aperture of radius 250 pc, one quarter of the model's 1 kpc
+halo radius. For a circular observing aperture, convert its angular radius to parsecs at
+the galaxy's distance and pass that value to `--aperture-pc`.
+
+Both spectra use the same 100,000 photons from the [C II tutorial](getting-started.md),
+with clumps moving radially outward at 150 km/s. Both average over escape directions
+and use the same 20 km/s bins and injected continuum.
 
 ```{figure} assets/research/cii-100k-v150-full-vs-250pc.png
 :alt: Full-aperture and 250 pc C II spectra have nearly identical blue absorption troughs. The 250 pc aperture collects less red emission, with the largest difference near +350 km/s.
