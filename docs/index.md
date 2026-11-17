@@ -35,7 +35,7 @@ Radiative transfer libraries and a neural-network surrogate make it practical to
 (overview-start)=
 ## Use PEACOCK
 
-Install PEACOCK, run a C II example on a CPU or GPU, and turn the escaping photons into a spectrum. Then choose another supported line or configure your own wind.
+Install PEACOCK, run a C II example on a CPU or GPU, and turn the escaping photons into a spectrum. Then [choose a line and an observable](choosing-a-line-and-an-observable.md) or configure your own wind.
 
 [Get started](getting-started.md), [check installation for your computer](installation.md), [explore the physical model](models.md) or [see example spectra](examples.md).
 
@@ -44,6 +44,7 @@ Install PEACOCK, run a C II example on a CPU or GPU, and turn the escaping photo
 :maxdepth: 2
 :hidden:
 
+choosing-a-line-and-an-observable
 models
 examples
 fitting

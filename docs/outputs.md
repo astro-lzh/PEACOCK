@@ -124,6 +124,8 @@ all-sky spectrum. Without `--aperture-pc`, it includes all escaping packets. Sup
 aperture radius in parsecs to select a smaller projected region. Use the same physical
 aperture when comparing models with an observed spectrum. A smaller aperture can remove
 extended scattered emission while retaining the compact continuum source.
+The [C II aperture comparison](choosing-a-line-and-an-observable.md#how-much-c-ii-light-falls-outside-a-500-pc-aperture)
+shows this effect using two spectra extracted from the same run.
 
 The {ref}`C II fitting walkthrough <dnn-tutorial>` shows a separate example with an
 explicit observational aperture and pixel grid. Its normalization and observation mapping

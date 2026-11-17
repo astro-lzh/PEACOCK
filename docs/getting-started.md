@@ -28,6 +28,8 @@ python3 peacock.py lines
 This tutorial uses `CII1334`. It includes the coupled C II 1334/1335 transitions and uses
 C II 1334.53 Å as the reference wavelength. Selecting a line loads its atomic data and
 scattering rules. You can reuse a backend build when selecting another supported line.
+See [Choosing a line and an observable](choosing-a-line-and-an-observable.md) for the
+transitions included in each selection.
 
 (installation-first-run)=
 ## 3. Run the C II example
