@@ -1,6 +1,6 @@
 # Physical model
 
-PEACOCK follows ultraviolet photons from a galaxy through a clumpy outflow. The escaped photons show how the gas can remove light from an absorption line and redistribute it into resonant or fluorescent emission.
+PEACOCK follows ultraviolet photons from a galaxy through a clumpy outflow. Gas in front of the galaxy absorbs light at particular wavelengths. Some of that light reaches the observer after scattering in the wind, either in the same transition or in a fluorescent line.
 
 ```{figure} assets/research/figure-01-clumpy-outflow.png
 :alt: Central galaxy and clumpy circumgalactic outflow, with a yellow path illustrating scattered Lyα and metal-line photons escaping toward an observer.
@@ -14,28 +14,30 @@ A central source illuminates a clumpy outflow. Clumps have internal Doppler broa
 
 ## Clump distribution and kinematics
 
-The baseline wind in {ref}`Li+2026a <li-2026a>` puts equal-size spherical clumps between an inner and outer halo radius. Their number density falls as $r^{-2}$, the outer radius is ten times the inner radius, and each ion’s column through one clump radius is constant with distance. A compact central source supplies the photons. The gas between clumps is transparent to the modeled lines and dust.
+In the baseline wind of {ref}`Li+2026a <li-2026a>`, light from a compact central source travels freely between clumps. The clumps are equal-size spheres, packed more densely near the galaxy and more sparsely farther out. Each clump presents the same radial column of a given ion, wherever it sits in the wind.
+
+In this model, the clump number density falls as $r^{-2}$ between the inner and outer halo radii, and the outer radius is ten times the inner one. The gas between clumps contributes neither line opacity nor dust extinction.
 
 To apply a velocity law to a fixed cloud catalogue, follow the
 [C II configuration example](configuring-a-peacock-simulation.md#switch-from-a-constant-outflow-to-a-t15-wind).
 
 ### FCC clump placement
 
-A face-centered cubic lattice supplies candidate clump centers. Each radial shell receives a whole-number quota calculated from the target density. The volume filling factor sets the total number of clumps. This is a way to place separate spheres while reproducing a prescribed radial distribution.
+To place the clumps without overlap, PEACOCK chooses their centers from sites on a face-centered cubic (FCC) lattice. The volume filling factor sets how much of the shell is occupied and therefore how many equal-size clumps it holds. The desired density profile sets how many of those clumps go into each radial shell.
 
 ### Bulk outflow
 
-The coherent wind starts at rest at the inner halo edge. An outward force drives acceleration and halo gravity slows the wind. The velocity scale $v_0$ and the launch force ratio $R$ set the speed profile. For some values of $R$ the bulk speed peaks inside the halo and then declines.
+In the baseline accelerating wind, clumps start with zero radial bulk speed at the inner halo edge. An outward force accelerates them, while halo gravity pulls them back. Depending on the strength of the outward force at launch, the bulk speed can peak inside the halo and then decline. The speed scale $v_0$ and the launch force ratio $R$ describe this velocity law below.
 
 ### Random motion and internal broadening
 
-Each clump also has a random velocity. Its three Cartesian components are drawn independently from zero-mean Gaussian distributions with the same standard deviation $\sigma_{\mathrm{cl}}$, giving no preferred direction. The separate Doppler parameter $b_{\mathrm{D,cl}}$ describes thermal and unresolved motion inside a clump.
+Two kinds of motion broaden a line. Whole clumps move at different velocities, so a photon encounters a different Doppler shift from one clump to the next. Within each clump, thermal and unresolved gas motions broaden its absorption profile. The clump velocity dispersion $\sigma_{\mathrm{cl}}$ describes the first effect, and the Doppler parameter $b_{\mathrm{D,cl}}$ describes the second.
 
 The equations below give the clump velocity and the radial outflow law used in {ref}`Li+2026a <li-2026a>` (§2.1).
 
 ### Random and total clump velocity
 
-Clumps at the same radius share the same radial bulk speed, while differences in their individual velocities spread the Doppler shifts that photons encounter. Each clump gets its own random velocity vector, which stays fixed while photons pass through the wind.
+Clumps at the same radius share a radial bulk speed. Each also receives a random velocity, drawn once and held fixed as photons travel through the wind.
 
 (eq-1)=
 
@@ -49,7 +51,7 @@ Clumps at the same radius share the same radial bulk speed, while differences in
 \]
 ```
 
-Draw each component of the random velocity independently. $\sigma_{\mathrm{cl}}$ is the standard deviation along one axis. Using the same value along all three axes gives no preferred direction.
+Each component is an independent Gaussian draw centered on zero. $\sigma_{\mathrm{cl}}$ is the standard deviation along one axis. Using the same value along all three axes gives no preferred direction.
 
 (eq-2)=
 
@@ -72,7 +74,7 @@ At radius $r$, add the outward bulk velocity along the radial unit vector $\hat{
 
 The wind law starts with a clump at rest at the inner edge of the halo, $R_{\mathrm{in}}$. An outward acceleration $A/r^2$ pushes the clump away from the galaxy, while halo gravity pulls it back. {ref}`Li+2026a <li-2026a>` assumes an isothermal halo with constant circular speed $v_{\mathrm c}$, so the enclosed mass $M(r)=v_{\mathrm c}^2r/G$ makes the inward acceleration $v_{\mathrm c}^2/r$.
 
-To get speed as a function of radius, write the time derivative as $\mathrm{d}v/\mathrm{d}t=v\,\mathrm{d}v/\mathrm{d}r$, where $v$ is the radial bulk speed. Integrating from the launch radius gives the speed law below. Its peak is where the two accelerations balance, or at the halo edge if that balance lies beyond it.
+To get speed as a function of radius, write the time derivative as $\mathrm{d}v/\mathrm{d}t=v\,\mathrm{d}v/\mathrm{d}r$, where $v$ is the radial bulk speed. Integrating from the launch radius gives the speed law below.
 
 (eq-3)=
 
@@ -110,7 +112,9 @@ R\left(1-\frac{R_{\rm in}}{r}\right)
 \]
 ```
 
-The bulk speed starts at zero at $R_{\mathrm{in}}$. The scale $v_0=\sqrt{2}\,v_{\mathrm c}$ sets the overall speed, and $R=A/(v_{\mathrm c}^{2}R_{\mathrm{in}})$ is the ratio of outward acceleration to gravity at launch. If the expression inside the braces is negative, the bulk speed is zero and the random motion remains.
+The scale $v_0=\sqrt{2}\,v_{\mathrm c}$ sets the overall speed, and $R=A/(v_{\mathrm c}^{2}R_{\mathrm{in}})$ is the ratio of outward acceleration to gravity at launch. If the expression inside the braces is negative, the bulk speed is zero and the random motion remains.
+
+The wind reaches its highest speed where the driving force and gravity balance, provided the halo extends that far. In equation (5), $q=R_{\mathrm{out}}/R_{\mathrm{in}}$ is the ratio of the halo radii.
 
 (eq-5)=
 
@@ -130,7 +134,7 @@ v_0\sqrt{R(1-q^{-1})-\ln q},
 \]
 ```
 
-Let $q=R_{\mathrm{out}}/R_{\mathrm{in}}$. If $1<R<q$, the speed peaks inside the halo at $r=R R_{\mathrm{in}}$. If $R\geq q$, its maximum is at the outer edge.
+If $1<R<q$, the speed peaks inside the halo at $r=R R_{\mathrm{in}}$. If $R\geq q$, its maximum is at the outer edge.
 
 (transport)=
 
@@ -214,7 +218,7 @@ x_j=x+d_j
 \]
 ```
 
-When nearby transitions share a Doppler width, use a common reference frequency $\nu_0$. The offset $d_j$ shifts the reference detuning $x$ to measure the offset from each transition’s center.
+For nearby transitions with the same Doppler width, the code can work on a single frequency axis centered on $\nu_0$. Adding $d_j$ gives the photon’s distance from the center of transition $j$ on that axis.
 
 ### Absorbing transition and atomic velocity
 
@@ -313,7 +317,7 @@ The excited level $u$ decays to level $k$ with probability proportional to its E
 \]
 ```
 
-In the atom’s frame, the frequency changes by the lower-level energy difference divided by Planck’s constant $h$, with the sign shown above. Neglecting recoil, the offset from line center is preserved relative to the new branch. The same atom’s velocity is used to transform both frequencies.
+For example, if the ion is left in a higher-energy level than it occupied before absorption, the outgoing photon carries less energy and has a lower frequency. The level spacing divided by Planck’s constant $h$ gives the frequency shift. Neglecting recoil, the photon keeps the same offset from the new branch’s line center in the atom’s frame. The same atom’s velocity is used to transform both frequencies.
 
 (source-dust-aperture)=
 
@@ -335,9 +339,9 @@ A spectrum includes escaped photons whose projected distance from the halo cente
 
 ## Model assumptions and run settings
 
-The geometry above describes the baseline model in {ref}`Li+2026a <li-2026a>`. A run’s configuration specifies the actual geometry, velocities, photon source and dust. The line catalog lists the atomic networks available to the command-line engine. Aperture selection and the fitting offsets below describe how predicted spectra are compared with observations.
+To adapt the baseline wind to another galaxy, set its geometry, velocities, photon source and dust in the [simulation configuration](configuring-a-peacock-simulation.md). To compare the resulting spectrum with an observation, match the aperture and account for any offset in systemic velocity or continuum level.
 
-{ref}`Li+2026a <li-2026a>` also discusses prescribed optically thin nebular and recombination emission, and overlap between different ions. See the line catalog for which transfer profiles are packaged.
+{ref}`Li+2026a <li-2026a>` also discusses optically thin nebular and recombination emission and overlap between different ions. The [line guide](choosing-a-line-and-an-observable.md#which-line-should-i-run) lists the transitions that run together in the released code.
 
 (model-parameters)=
 

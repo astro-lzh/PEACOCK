@@ -44,6 +44,20 @@ body {
   color: #0b4653;
 }
 
+.rst-content details {
+  margin-bottom: 1.5rem;
+}
+
+.rst-content summary {
+  color: var(--peacock-teal);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.rst-content details[open] > summary {
+  margin-bottom: 0.75rem;
+}
+
 .rst-content figure {
   margin: 1.75rem 0;
 }

@@ -1,43 +1,44 @@
 # Spectral fitting
 
-Once you can [run and plot a synthetic spectrum](getting-started.md), you can compare
-a family of wind models with an observed line. This page follows a C II fit to
-J1253−0312, from a library of simulated spectra to a direct check of the fitted line shape.
+Which wind models can explain the C II absorption and emission in J1253−0312?
+Starting from [simulated spectra](getting-started.md), this example fits the observed
+line and checks the result with a fresh radiative transfer calculation.
 
 (workflow)=
 ## From simulated spectra to a fit
 
-The fitting workflow uses a deep neural network (DNN) to predict spectra during Bayesian
-sampling. The source download provides the transport engine used to generate the spectral
-library.
+Running a new simulation for every trial wind would make fitting slow. Instead, a
+deep neural network (DNN) learns how the spectrum changes across a library of
+PEACOCK simulations. The fit can then explore many winds and use direct simulations
+to check the predictions that matter most.
 
 ```{figure} assets/research/figure-15-dnn.png
 :alt: Five stages of the PEACOCK spectral fitting pipeline, including a DNN surrogate and direct radiative-transfer validation.
 :width: 100%
 :target: _static/research/figure-15-dnn.pdf
 
-Direct radiative-transfer calculations form the spectral library. A DNN predicts spectra for nested sampling. Targeted resampling expands the library, and a direct calculation checks the best-fit prediction.
+Extra simulations help where the data favor winds that are sparsely represented in the training library.
 ```
 
 1. **Generate spectra with radiative transfer**
 
-   Sample the physical parameters and run PEACOCK at each point to build a library of emergent spectra.
+   Choose a range of winds and simulate the spectrum from each one.
 
-2. **Train a spectral surrogate**
+2. **Train the network to predict spectra**
 
-   Fit a deep neural network to predict spectra across the sampled parameter domain.
+   Give the network each set of wind parameters together with its simulated spectrum.
 
-3. **Explore the posterior**
+3. **Fit the observed line**
 
-   Compare the predicted spectra with the observations inside a nested sampler.
+   Compare the predicted absorption and emission with the data. A nested sampler estimates which combinations of wind parameters are most probable.
 
 4. **Refine where the fit needs more models**
 
-   Add radiative transfer calculations where the posterior reaches a training boundary or where the surrogate needs denser coverage.
+   If the fit favors winds near the edge of the library or in a sparsely sampled region, simulate more winds there and retrain the network.
 
 5. **Rerun the transport at the fitted parameters**
 
-   Compare an independent Monte Carlo calculation with the predicted line shape at the same parameters.
+   Check whether an independent PEACOCK simulation recovers the line shape predicted by the network.
 
 (dnn-tutorial)=
 ## Fit the C II spectrum of J1253−0312
@@ -64,24 +65,25 @@ runs. To train your own network, follow step 3 with your own model library.
 (j1253-parameters)=
 ### 1. Choose the physical parameters
 
-The J1253−0312 example fits three quantities. $A$ sets the clump encounter rate
-at one kiloparsec, $q$ sets its radial slope, and $\log_{10} N_1$ sets the C II
-column through one clump radius in the reference lower level. The wind velocity law, dust,
-level-population ratio, aperture, velocity shift and continuum scale are fixed.
+The fit varies how often a photon encounters clumps at one kiloparsec ($A$), how
+quickly that rate falls with radius ($q$), and the C II column from the center
+to the edge of one clump ($N_1$, counting ions in the reference lower level).
+The [prior ranges](#run-a-new-fit) below are also the ranges used to
+train the network.
 
-The model uses a $1$–$10\,\mathrm{kpc}$ halo and $50\,\mathrm{pc}$ clumps. The training
-set samples $A$ from $1$ to $9\,\mathrm{kpc}^{-1}$ uniformly in its logarithm,
-$q$ from $1$ to $3$, and $\log_{10} N_1$ from $14.3$
-to $15.3$.
+For this galaxy, the clumps have a radius of $50\,\mathrm{pc}$ and occupy a shell
+from $1$ to $10\,\mathrm{kpc}$. The wind velocity law, dust, lower-level population ratio and
+observing aperture stay fixed, as do the velocity shift and continuum scale.
 
 (j1253-binning)=
 ### 2. Bin the escaped packets
 
-The binning command reads the ASCII observer detuning and Doppler width, converts each
-escape to velocity relative to C II $1334.53\,\text{Å}$, and selects photons inside a projected
-aperture of $4.585\,\mathrm{kpc}$. It counts escapes in $232$ fine bins, normalizes the
-spectrum over the fitting window and maps it onto the $50$ observed pixels by bin
-overlap.
+Compare the model with what the telescope collected. For J1253−0312, keep photons
+inside a projected radius of $4.585\,\mathrm{kpc}$ and measure their velocities
+relative to C II $1334.53\,\text{Å}$. The binning command first counts photons in
+232 fine velocity bins. It normalizes the spectrum over the fitting window, then
+assigns flux to each of the 50 observed pixels according to how much of each bin
+falls within that pixel.
 
 To practice binning, use the CPU build from the [first C II simulation](getting-started.md)
 with the bundled synthetic configuration. The observed J1253−0312 fit uses its own
@@ -96,11 +98,15 @@ python3 cii-dnn-example.py bin cii-dnn-fit-data.npz run/cii-binning cii-binned.n
 (j1253-training)=
 ### 3. Train on parameter and spectrum pairs
 
-The J1253 training library used 2,000 physical parameter vectors and 120,000 launched
-packets per simulation. Each row of the input matrix gives the three physical parameters.
-The target row is the 232-bin spectrum after the same aperture selection and
-normalization. The network learns the mapping from model parameters to emergent flux
-density.
+Each training example pairs a wind with the spectrum it produces. The J1253−0312 library
+contains 2,000 winds, each simulated with 120,000 photons. One row of the training
+data gives $A$, $q$ and $\log_{10}N_1$, and its matching row gives the spectrum on the
+fine velocity grid. The download already contains the trained network, so you can
+[run the fit](#run-a-new-fit) immediately.
+
+```{raw} html
+<details><summary>Build a model library and train your own network</summary>
+```
 
 To construct a new library for equal-size clumps, turn the encounter rate $\kappa(r)=A(r/r_0)^{-q}$
 into a number density by dividing by the clump cross section $\pi R_{\mathrm{cl}}^2$, with
@@ -142,18 +148,18 @@ net.fit((x - x_mean) / x_scale, (y - y_mean) / y_scale,
         epochs=500, batch_size=128)
 ```
 
+```{raw} html
+</details>
+```
+
 (j1253-fit)=
 ### 4. Fit the observed spectrum
 
-The original fit used nested sampling with independent uniform priors in $\log_{10} A$,
-$q$ and $\log_{10} N_1$. For each sampled point, the DNN predicts the fine-bin
-spectrum. Apply the fixed velocity offset and continuum scale, integrate over the observed
-pixels and compare with the measured flux. The fit used observational variance plus the
-training library’s estimated packet variance.
-
-The replay evaluates the saved network at all 3,606 archived candidate samples and
-recomputes their likelihood ranking. It selects the original maximum-likelihood sample and
-writes the model and data on the same velocity grid.
+To reproduce the spectrum shown above, run the replay. It evaluates the trained
+network at the 3,606 wind models saved from the original fit, applies the adopted
+velocity shift and continuum scale, and compares each prediction with the data on
+the observed velocity grid. The output CSV includes the highest-likelihood
+spectrum and the two independent simulations used to check it.
 
 ```bash
 python3 cii-dnn-example.py replay cii-dnn-fit-data.npz --output cii-comparison.csv
@@ -172,28 +178,19 @@ python3 -m pip install "dynesty==3.2.0" matplotlib
 python3 cii-dnn-example.py fit cii-dnn-fit-data.npz --seed 17 --output run/j1253-seed17
 ```
 
-To define the prior, start with three independent uniform coordinates
-$u_1,u_2,u_3$ between zero and one. The following transformation gives the
-physical inputs supplied to the DNN.
+The priors describe which winds the fit considers before seeing the galaxy's
+spectrum. The three parameters vary independently at this stage.
 
-| Parameter | Prior used in this fit | Value passed to the prediction function |
-| --- | --- | --- |
-| Clump encounter rate $A$ at 1 kpc | Uniform in $\log_{10}(A/\mathrm{kpc}^{-1})$ for $1\leq A/\mathrm{kpc}^{-1}\leq9$ | $A=9^{u_1}\,\mathrm{kpc}^{-1}$ |
-| Radial slope $q$ of the encounter rate | Uniform from 1 to 3, dimensionless | $q=1+2u_2$ |
-| Reference lower-level C II column through one clump radius, $\ell=\log_{10}(N_1/\mathrm{cm}^{-2})$ | Uniform from 14.3 to 15.3 in $\ell$ | $\ell=14.3+u_3$ |
+| Wind parameter | Prior for J1253−0312 |
+| --- | --- |
+| Clump encounter rate $A$ at 1 kpc | 1–9 kpc⁻¹, uniform in the logarithm. The ranges 1–3 and 3–9 kpc⁻¹ have equal prior probability. |
+| Radial slope $q$ | 1–3, dimensionless and uniform across this range. Larger values put more of the encounters toward the inner wind for a given $A$. |
+| C II column through one clump radius | $\ell=\log_{10}(N_1/\mathrm{cm}^{-2})$ is uniform from 14.3 to 15.3. |
 
-The prediction function takes $A$ in physical units and applies the logarithm
-internally. It maps each trial spectrum onto the 50 observed pixels. A Gaussian
-likelihood compares the predicted and observed fluxes using the fixed variance
-of each pixel, including observational and Monte Carlo contributions.
-The tutorial uses 300 live points and the static sampler's `dlogz=0.05` stopping
-criterion for the estimated remaining contribution to the log evidence.
-
-Each run writes `posterior.npz` (parameter samples and their normalized posterior
-weights), `summary.json` (weighted quantiles and run settings), and `corner.png`.
-The script obtains the weights with `results.importance_weights()` and passes them
-to `dynesty.utils.quantile`. The [dynesty corner plot](https://dynesty.readthedocs.io/en/v3.2.0/quickstart.html#corner-plots)
-uses the same weights for the one- and two-parameter distributions.
+The fit compares the predicted and observed flux in each pixel, giving less
+weight to pixels with larger uncertainty. Open `corner.png` to see which winds
+the data favor. Read down its first column to see how changes in the encounter
+rate can be offset by changes in the other parameters.
 
 ```{figure} assets/research/cii-j1253-posterior-corner.png
 :alt: Posterior distributions for A, q and the logarithmic C II column. The upward slope of the A–q contours shows that larger encounter rates at one kiloparsec are favored together with steeper radial declines.
@@ -229,6 +226,28 @@ between $A$ and $q$. Download the weighted samples for
 {download}`seed 43 <assets/research/cii-j1253-posterior-seed43.npz>` to examine
 these distributions. Column order is recorded in `parameter_names`.
 
+```{raw} html
+<details><summary>How the sampler draws and weights the models</summary>
+```
+
+Starting from independent uniform coordinates $u_1,u_2,u_3$ between zero and
+one, the script uses $A=9^{u_1}\,\mathrm{kpc}^{-1}$, $q=1+2u_2$, and
+$\ell=14.3+u_3$. The prediction function takes $A$ in physical units and
+applies the logarithm internally. The fit uses a Gaussian likelihood with a
+fixed variance in each pixel, combining observational uncertainty with the
+estimated Monte Carlo variance in the training library.
+
+The static sampler starts with 300 live points (trial winds) and stops when the
+estimated remaining change in log evidence falls below `dlogz=0.05`.
+`posterior.npz` stores the sampled winds and their normalized posterior weights.
+Both the [corner plot](https://dynesty.readthedocs.io/en/v3.2.0/quickstart.html#corner-plots)
+and the percentiles in `summary.json` use those weights. In the script,
+`results.importance_weights()` supplies them to `dynesty.utils.quantile`.
+
+```{raw} html
+</details>
+```
+
 (j1253-validation)=
 ### 5. Rerun transport at the fitted parameters
 
@@ -238,14 +257,16 @@ geometry, source and observing settings fixed, then change the photon seeds and 
 full simulation. Bin both direct spectra with the same aperture, normalization, velocity
 shift, pixel edges and flux scale as the DNN prediction.
 
-The replay compares the DNN with the saved direct spectra from two independent
-$120{,}000$-packet runs. At this point the root-mean-square difference is $1.01\times10^{-5}$
-in the normalized flux-density units, or $1.11$ times the per-pixel Monte Carlo
-uncertainty in RMS. The CSV contains both runs, their mean and the velocity-dependent
-residual to the DNN.
+How close is the network prediction? At the archived best fit, the difference
+from the mean of two independent 120,000-photon spectra is comparable to the
+simulations' own sampling noise. Across the observed pixels the RMS difference
+is $1.01\times10^{-5}$ in normalized flux-density units. Expressed in units of each
+pixel's Monte Carlo uncertainty, the RMS is 1.11. The replay CSV contains both
+simulations, their mean and the difference from the network at each velocity.
 
-This check measures the surrogate error at the selected point. The study also checked 16
-separate points using two independent runs at each point before fitting the observations.
+This comparison checks the predicted spectrum at one wind model. Before fitting
+the observations, the study also checked predictions at 16 other parameter
+points, using two independent simulations at each.
 
 For a new fit, save two copies of your best-fit configuration as `fit-seed-a.cfg`
 and `fit-seed-b.cfg`. Use the same grid seed in both, give each a different photon

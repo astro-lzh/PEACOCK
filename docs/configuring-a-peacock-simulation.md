@@ -1,28 +1,32 @@
 # Configuring a PEACOCK simulation
 
-The bundled C II example launches 100,000 continuum photons into a dust-free wind.
-To see how the radial velocity law shapes the spectrum, run the same 685 clumps first
-with a constant outward speed of 150 km/s and then with a T15 accelerating wind.
-Both calculations use a C II column of $3\times10^{15}\,\mathrm{cm}^{-2}$ across one
-clump radius and a random velocity dispersion of 25 km/s per Cartesian component.
+In the [C II tutorial](getting-started.md), the clumps move outward at the same
+speed throughout the halo. To see how acceleration changes the absorption trough,
+run the same wind again with an outward speed that varies with radius. Use the
+same clump positions, C II column density and random motions in both calculations.
 
 ## Switch from a constant outflow to a T15 wind
 
-Copy `examples/cii/quickstart.cfg` to `cii-t15.cfg` or download the
+The original configuration gives every clump a radial speed of 150 km/s. In
+the T15 model the radial motion starts at rest at the launch radius, then builds
+up as the clump travels outward. Both winds have a random velocity dispersion of
+25 km/s along each of the three axes.
+
+To switch winds, copy `examples/cii/quickstart.cfg` to `cii-t15.cfg` and replace
+these two lines in `[grid]`, or download the
 {download}`complete T15 configuration <assets/examples/cii/cii-t15.cfg>`.
-Only two lines in `[grid]` change.
 
 | Constant radial speed · original lines | T15 accelerating wind · replacement lines |
 | --- | --- |
 | `cloud_motion_modes = ((2,1))` | `cloud_motion_modes = ((2,3))` |
 | `cloud_motion_params = ((25,150,0,0,0,0))` | `cloud_motion_params = ((25,80,10,1.5,100,950))` |
 
-The first mode, `2`, gives each clump three independent Gaussian velocity components.
-Its parameter, `25`, is the standard deviation along each axis, in km/s. Both runs use
-the same grid seed and the same cloud centers. The second mode sets the coherent outward
-motion. Mode `1` adds 150 km/s at every radius. Mode `3` uses the five entries after
-`25` to set a speed that varies with radius. The values below come from the wind example
-in the release's `docs/cloud-model.md`.
+Read the two motion choices from left to right. The first (`2`) draws the three
+random velocity components independently from a Gaussian distribution. Keeping
+the grid seed and catalogue fixed gives the same clumps the same random motions.
+The second choice sets their outward speed. Change it from constant (`1`) to
+accelerating (`3`). In the parameter row, keep `25` for the random dispersion
+and use the remaining five entries for the wind law.
 
 | T15 entry, in file order | Example value | Meaning |
 | --- | --- | --- |
@@ -39,9 +43,10 @@ $$
 v_{\rm wind}(r)=v_0\sqrt{\max\!\left(0,\;R[1-x^{1-\alpha}]-\ln x\right)}.
 $$
 
-With these inputs the radial speed reaches 120 km/s at 200 pc and 158 km/s at 500 pc.
-Outside the wind interval the clump retains its random motion. The placement bounds
-and the wind bounds happen to coincide here. The configuration sets them separately.
+Here the radial speed reaches 120 km/s at 200 pc and 158 km/s at 500 pc.
+Outside the wind interval the clump retains its random motion. Clump placement
+and wind acceleration each have their own inner and outer radii. This example
+uses the same boundaries for both, as in the release's `docs/cloud-model.md`.
 The [wind equation in Physical model](models.md#radial-acceleration-and-outflow-speed)
 gives the $\alpha=2$ case.
 
@@ -73,10 +78,11 @@ python3 tools/plot_spectrum.py run/cii-t15 --output run/cii-t15/spectrum.png
 :alt: Constant and accelerating radial velocities, and their C II spectra. The T15 spectrum has a shallower blue absorption minimum shifted to a more negative velocity.
 :width: 100%
 
-All 100,000 photons escaped in each CPU run. With 20 km/s bins, the deepest
-absorption is at −150 km/s for the constant wind (flux 0.635 times the incident
-continuum) and −170 km/s for the T15 wind (0.734). One T15 packet escaped outside
-the plotted velocity window.
+The accelerating wind produces a shallower absorption trough farther to the blue.
+With 20 km/s bins, the minimum shifts from −150 km/s in the constant wind to
+−170 km/s in the T15 wind, and its flux rises from 0.635 to 0.734 times the
+incident continuum. All 100,000 photons escaped in each CPU run. One T15 packet
+fell outside the plotted velocity window.
 ```
 
 To check the inputs of a completed run, open `resolved.cfg` in its output directory.
@@ -86,15 +92,12 @@ are in `spectrum.csv`.
 
 ## Read the C II configuration
 
-The table values come from the {download}`original C II configuration <assets/examples/cii/quickstart.cfg>`.
-Use them to reproduce this example. Mode numbers, counts, seeds and flags have no
-physical units. The placement and motion lists contain one entry per cloud population;
-here `cloud1` is the only population.
-
-With `--line CII1334`, omitting `--config` selects the bundled example. Passing
-`--config` supplies the entire configuration for the run. Both examples above read
-the same {download}`clump catalogue <assets/examples/cii/quickstart-clumps.txt>`.
-It supplies positions in **cm**, while radii in the configuration are in **pc**.
+The {download}`original C II configuration <assets/examples/cii/quickstart.cfg>`
+sets the source of the photons, the gas they travel through, and the motion of
+the clumps. This is the default for `--line CII1334`. Passing `--config` selects
+your own complete configuration file. The separate
+{download}`clump catalogue <assets/examples/cii/quickstart-clumps.txt>` supplies
+the positions in **cm**. Radii in the configuration are in **pc**.
 
 ### Photon packets and source
 
@@ -126,6 +129,11 @@ one clump. Radii in these two configuration sections are in pc.
 | `set_all_absorbing_dust` | omitted | `False` | With `False`, an optical-depth dust input would specify total extinction. The zero dust densities here make this switch immaterial. |
 
 ### Clump positions and velocities
+
+The catalogue gives the clump centers. These settings determine how many centers
+the simulation expects and how their clumps move. Each list has one entry per
+cloud population. The example uses a single population, `cloud1`. Mode numbers
+select options. They have no physical units, as with counts, seeds and flags.
 
 | Setting in `[grid]` | Example value | Meaning |
 | --- | --- | --- |

@@ -25,22 +25,20 @@ python3 peacock.py lines
 
 In Windows PowerShell, use `.\.venv\Scripts\python.exe peacock.py lines`.
 
-This tutorial uses `CII1334`. It includes the coupled C II 1334/1335 transitions and uses
-C II 1334.53 Å as the reference wavelength. Selecting a line loads its atomic data and
-scattering rules. You can reuse a backend build when selecting another supported line.
-See [Choosing a line and an observable](choosing-a-line-and-an-observable.md) for the
-transitions included in each selection.
+Choose `CII1334` to follow the C II transitions near 1334 and 1335 Å together.
+PEACOCK loads their atomic data and scattering rules for you. Once you have built the
+CPU or GPU program, you can use the same program to [run another supported line](choosing-a-line-and-an-observable.md).
 
 (installation-first-run)=
 ## 3. Run the C II example
 
-The example launches 100,000 continuum photons through 685 gas clumps. Each clump moves
-outward at 150 km s⁻¹ and also has a random velocity with a dispersion of 25 km s⁻¹
-per Cartesian component. The C II selector loads the same `examples/cii/quickstart.cfg`
-and `examples/cii/quickstart-clumps.txt` on either backend.
+The source shines a flat continuum through a wind. The gas clumps move outward
+at 150 km/s, with random motion superimposed. The simulation follows 100,000
+photons to determine how the wind reshapes that continuum.
 
-Choose the commands for your backend and operating system. Build once for each backend.
-For subsequent simulations, reuse that build and give each run a new output directory.
+Choose the commands for your processor and operating system. The first command
+builds PEACOCK. The second runs the model. For later simulations, reuse the build
+and choose a fresh output directory.
 
 ### CPU
 
@@ -83,7 +81,7 @@ $ucrt = "C:/msys64/ucrt64"
 (tutorial-spectrum)=
 ## 4. Make the spectrum
 
-Use the command for the operating system and backend you used to run the simulation.
+Choose the plotting command for the system and processor you used in step 3.
 
 For a CPU run, use
 
@@ -109,17 +107,19 @@ For a GPU run in Windows PowerShell, use
 .\.venv\Scripts\python.exe tools/plot_spectrum.py run/cii-cuda --output run/cii-cuda/spectrum.png
 ```
 
-Open `spectrum.png` to see the C II profile. The accompanying `spectrum.csv` contains the
-binned values for your own analysis, and `spectrum.json` records the plotting settings.
-Velocity is measured relative to C II 1334.53 Å. Negative velocity is blueward and positive
-velocity is redward. The plot uses the injected flat continuum to set a continuum level
-of one.
+Open `spectrum.png` and look for the absorption trough on the blue side of the
+line. A flux of one marks the incident continuum. The horizontal axis measures
+velocity relative to C II 1334.53 Å, with blueshift to the left and redshift to
+the right. The accompanying `spectrum.csv` gives the values in each velocity bin,
+and `spectrum.json` records how they were plotted.
 
 ```{figure} assets/research/cii-100k-v150-spectrum.png
 :alt: C II spectrum from the tutorial run, with velocity on the horizontal axis and flux relative to the injected continuum on the vertical axis.
 :width: 100%
 
-With 100,000 photons and a 150 km s⁻¹ radial outflow, the reference CPU run has its deepest absorption at −150 km s⁻¹. The flux in this bin is 0.635 of the incident continuum. The shaded band shows approximate Monte Carlo sampling uncertainty.
+The absorption is deepest near −150 km/s in the reference CPU run, where the
+flux is about 64% of the incident continuum. The shaded band shows the approximate
+uncertainty from sampling a finite number of photons.
 ```
 
 {download}`Download the reference spectrum with flux, packet counts and sampling uncertainties (CSV) <assets/research/cii-100k-v150-spectrum.csv>`
@@ -156,10 +156,10 @@ explains each input and shows how to replace the constant speed with an accelera
 
 ## Keep a run reproducible
 
-The example fixes `[grid] random_seed` for the gas realization and `[run] random_seed`
-for photon sampling. Keep the geometry seed and catalogue fixed when comparing two
-independent transport calculations, and change the photon seed between them. Keep each
-run's resolved configuration, atomic table, packet output and run summary together.
+To follow a new set of photon paths through the same wind, change
+`[run] random_seed`. Keep the clump catalogue and `[grid] random_seed` fixed so
+that the clump positions and velocities stay the same. Save the resolved configuration,
+atomic table, packet output and run summary together.
 
 Next, [choose a line and an observable](choosing-a-line-and-an-observable.md) to
 model a different transition or measure the spectrum through a smaller aperture.

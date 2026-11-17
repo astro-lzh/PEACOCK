@@ -1,13 +1,15 @@
 (common-questions)=
 # Troubleshooting
 
-Start with the [first C II simulation](getting-started.md) and its supplied configuration.
-The checks below address common installation and run problems.
+Look for the error message or symptom below. If the problem began after editing
+a model, try the supplied [C II example](getting-started.md) to check whether the
+installation works with its original inputs.
 
 ## The build cannot find GSL or `nm`
 
-Install the compiler and GSL development files for your operating system using
-[Installation](installation.md). On Linux or macOS, check:
+PEACOCK needs the GNU Scientific Library (GSL) and the compiler tools listed
+in the [platform instructions](installation.md). On Linux or macOS,
+these commands show whether your terminal can find them.
 
 ```bash
 command -v cc
@@ -42,10 +44,10 @@ and packet files together.
 
 ## NVRTC or a CUDA header cannot be found
 
-Use the same Python environment for installing CUDA components and building PEACOCK. The
-[GPU installation command](installation.md#add-gpu-support-on-linux-or-windows) installs
-the four components PEACOCK looks for. A lone CUDA runtime package is not enough to
-compile transport.
+NVRTC is the NVIDIA compiler library that PEACOCK uses to build its GPU program.
+Run the [GPU installation command](installation.md#add-gpu-support-on-linux-or-windows)
+in the same Python environment you use to build PEACOCK. It installs the compiler
+library and the header files it needs.
 
 For a complete system Toolkit, use the explicit `--nvrtc-library` and `--cuda-include`
 arguments shown in [GPU setup](gpu.md#use-an-existing-cuda-toolkit). If packages were
@@ -67,22 +69,17 @@ supply the compiler.
 (windows-blocks-a-compiler-with-application-control-error-4551)=
 ## Windows reports Application Control error 4551
 
-If Windows reports “An Application Control policy has blocked this file” when starting
-`g++.exe`, it is preventing the host C++ compiler from running. Use a policy-approved
-GCC-compatible C++ toolchain. On a managed machine, ask your administrator which toolchain
-the device policy allows.
+Check which file Windows blocked and when the message appeared.
 
-The [Windows GPU build command](getting-started.md#nvidia-gpu) selects the UCRT64
-Clang compiler explicitly with `--cxx`. Set its path to the Clang installation
-approved on your machine. The host compiler must be
-able to run before the CUDA build can finish. Microsoft's
-[App Control troubleshooting guide](https://learn.microsoft.com/windows/security/application-security/application-control/app-control-for-business/operations/appcontrol-debugging-and-troubleshooting)
-explains how an administrator can identify the blocked file in the CodeIntegrity event log.
-
-If the build finishes but a run stops with error 4551 before input preparation, check
-whether the event names `peacock-export.exe`. PEACOCK built this program to prepare the
-cloud grid and photon packets. On an organization-managed device, give your administrator
-the executable path and `executable_sha256` from `build.json` to identify the affected build.
+- **During the build, `g++.exe`.** Windows has blocked the C++ compiler.
+  The [Windows GPU tutorial](getting-started.md#nvidia-gpu) shows how to select
+  Clang with `--cxx`. On a managed computer, use a compiler approved by your
+  administrator.
+- **At the start of the run, `peacock-export.exe`.** This program prepares the
+  cloud grid and initial photons. Give your administrator the executable path and
+  its `executable_sha256` value from `build.json` so they can identify the exact
+  file. The [Microsoft troubleshooting guide](https://learn.microsoft.com/windows/security/application-security/application-control/app-control-for-business/operations/appcontrol-debugging-and-troubleshooting)
+  explains where to find the blocked file in the CodeIntegrity event log.
 
 Windows 11 Smart App Control has no per-app exception. If it blocks a locally built
 exporter, Microsoft recommends a build signed with a trusted code-signing certificate.
@@ -108,16 +105,16 @@ For HDF5, `pkg-config --modversion hdf5` should succeed before enabling `--hdf5`
 
 ## The requested line is not available
 
-List the exact selectors:
+List the line names this installation accepts.
 
 ```bash
 python3 peacock.py lines
 ```
 
-Use the selector for the desired reference transition. A multiplet selector still uses
-the full atomic network supplied for that profile. All 14 packaged selectors support
-CUDA; `CIV1548` and `MgII2796` currently require CUDA. The remaining 12 also support CPU
-transport.
+Use the name for the reference transition you want. For a multiplet, PEACOCK also
+follows the coupled transitions listed in the [line table](choosing-a-line-and-an-observable.md).
+Every listed line can run on an NVIDIA GPU. In this release, C IV and Mg II
+require a GPU.
 
 Research figures may show applications beyond the selectors in the downloaded release.
 For example, the Si III and Si IV figures in [Examples](examples.md) do not supply a new
@@ -125,14 +122,14 @@ command-line selector.
 
 ## The plotted spectrum is noisy or empty
 
-Sampling noise grows when a bin contains few escaping photons. Increase `--nphot` for
-a smoother Monte Carlo spectrum while keeping the physical parameters fixed. Check that the velocity range contains the line and that the observing
-aperture includes the escaping photons. [Reading the outputs](outputs.md) explains the
-escape selection and normalization.
+**Noisy profile.** A velocity bin with few photons has a large sampling uncertainty.
+Increase `--nphot` and keep the same wind and plotting settings to obtain a smoother
+profile.
 
-An empty plot can also result from an unsuitable configuration, strong absorption, or
-too few escaping packets in the selected aperture. Read the terminal message and run
-summary before interpreting it as a physical spectrum.
+**Empty profile.** Start with the terminal message and run summary. If photons
+escaped, check how many fell inside your aperture and plotted velocity range. If
+none escaped, inspect the model configuration and absorption. The
+[output guide](outputs.md) shows where to find each count.
 
 ## Get help
 

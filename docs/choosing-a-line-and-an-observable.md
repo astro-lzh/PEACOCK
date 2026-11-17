@@ -1,13 +1,16 @@
 # Choosing a line and an observable
 
-Choose the transition you want to model with `--line`. After the run, use the saved
-photons to decide which part of the wind to observe and how to measure its spectrum.
+Start with the feature you want to compare with an observation, such as Lyα
+emission or the C IV doublet. Choose the line before running PEACOCK. Once the
+photons have escaped, you can use the same run to change the size of the
+observing aperture or measure the line relative to its continuum.
 
 ## Which line should I run?
 
-The selector loads the atomic data and scattering rules and sets the reference
-wavelength for velocity zero. A single run can include several coupled transitions.
-These are the choices in [PEACOCK 1.0.2](download.md).
+Pass the name in the middle column to `--line`. This loads the atomic data and
+scattering rules. Some choices model several transitions together. For example,
+`CIV1548` produces both components of the doublet. The reference wavelength sets
+zero on the velocity axis. The table lists the lines in [PEACOCK 1.0.2](download.md).
 
 | Spectrum of interest | `--line` | What the calculation includes |
 | --- | --- | --- |
@@ -22,10 +25,11 @@ These are the choices in [PEACOCK 1.0.2](download.md).
 | Si II near 1190–1197 Å | `SiII1190` or `SiII1193` | Both include the 1190.42 and 1193.29 Å resonance lines and the 1194.50 and 1197.39 Å fluorescent branches. |
 | Si II near 1527–1533 Å | `SiII1526` | The 1526.71 Å resonance line and its 1533.43 Å fluorescent branch. |
 
-All these selectors run on NVIDIA GPUs. C IV and Mg II require CUDA in this release;
-the others also run on a CPU. Si III and Si IV appear in the [observed fits](examples.md#example-spectra)
-as research examples beyond the packaged selectors. For multiplets, choose an input
-spectrum and a plotting window wide enough for the components you want to study.
+For a doublet or multiplet, choose a source spectrum and plotting window wide
+enough to cover the components of interest. All lines in the table run on NVIDIA
+GPUs. C IV and Mg II require CUDA in this release, and the others also run on a CPU.
+The Si III and Si IV [observed fits](examples.md#example-spectra) illustrate additional
+lines studied with PEACOCK.
 
 ## When do I need to rerun the transport?
 
@@ -47,24 +51,23 @@ the full halo with a circular aperture of radius 250 pc, one quarter of the mode
 halo radius. For a circular observing aperture, convert its angular radius to parsecs at
 the galaxy's distance and pass that value to `--aperture-pc`.
 
-Both spectra use the same 100,000 photons from the [C II tutorial](getting-started.md),
-with clumps moving radially outward at 150 km/s. Both average over escape directions
-and use the same 20 km/s bins and injected continuum.
-
 ```{figure} assets/research/cii-100k-v150-full-vs-250pc.png
 :alt: Full-aperture and 250 pc C II spectra have nearly identical blue absorption troughs. The 250 pc aperture collects less red emission, with the largest difference near +350 km/s.
 :width: 100%
 
-The 250 pc aperture retains 97,352 of the 100,000 escaping photons. Both spectra reach
-their absorption minimum at −150 km/s. The lower panel shows the light falling outside
-250 pc. The difference is largest in the bin centered at +350 km/s, where the flux
-drops from 1.198 to 1.077 times the incident continuum.
+The blue absorption trough stays at −150 km/s in both spectra. The smaller aperture
+collects less red emission, with the largest difference near +350 km/s. There the
+flux falls from about 1.20 to 1.08 times the incident continuum. The lower panel
+shows the light missed by the smaller aperture.
 ```
 
 {download}`Download the plotted fluxes and packet counts (CSV) <assets/research/cii-100k-v150-full-vs-250pc.csv>`
 
-To reproduce the two spectra from the completed tutorial, run these commands in the
-PEACOCK source directory. Replace `run/cii` with your run directory if needed.
+To reproduce the comparison, start from the [C II tutorial](getting-started.md)
+run with a 150 km/s outflow. The full aperture includes all 100,000 escaping
+photons, and 97,352 fall inside 250 pc. The commands below average over all escape
+directions, use 20 km/s bins and normalize to the injected continuum. Run them
+from the PEACOCK source directory, replacing `run/cii` with your run directory.
 
 ```bash
 python3 tools/plot_spectrum.py run/cii --bins 60 --velocity-range -600 600 --normalization continuum --output run/cii/full.png

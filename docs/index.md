@@ -1,6 +1,6 @@
 # PEACOCK
 
-PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics) is a three-dimensional Monte Carlo radiative transfer code for ultraviolet lines. It follows photons through gas clumps to predict how gas coverage, gas motion, dust and the source spectrum shape observed absorption and emission.
+PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics) models the ultraviolet emission and absorption lines produced by galactic winds. It uses three-dimensional Monte Carlo radiative transfer to follow photons through gas clumps and dust. You can change where the clumps lie and how they move, then see how the absorption troughs and emission peaks respond.
 
 (overview-start)=
 (use-peacock)=
@@ -12,8 +12,8 @@ PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex K
 ```
 
 1. [Download and install PEACOCK](installation.md) on Linux, macOS or Windows.
-2. [Run the C II tutorial](getting-started.md) to build the code, launch 100,000 photons and plot the escaping spectrum.
-3. [Choose a line and an observable](choosing-a-line-and-an-observable.md) to try a different transition or extract a smaller aperture from your first run.
+2. [Run the C II tutorial](getting-started.md) to simulate light passing through a wind and plot the spectrum that escapes.
+3. [Choose a line and an observable](choosing-a-line-and-an-observable.md) to try another transition or see how the same wind looks through a smaller aperture.
 
 (overview-research)=
 ## UV line formation in clumpy winds
@@ -28,20 +28,20 @@ Photon transport in a clumpy wind
 
 ### Model bulk outflow and random gas motions
 
-Follow the radial outflow, random velocities among clumps and line broadening within each clump separately.
+Set the speed at which clumps move away from the galaxy and the spread in their individual velocities. Gas motions inside each clump can broaden the line further.
 
 ### Model absorption and re-emission together
 
-Follow resonant scattering and fluorescent branches through the same gas distribution. Compare lines that respond differently to opacity, dust and the source spectrum.
+A photon absorbed by a clump can be re-emitted in the same transition or, for some ions, at a different wavelength through fluorescence. PEACOCK follows both through the same wind.
 
 ### Assess what line profiles reveal about the wind
 
-Different radial structures can produce similar integrated spectra. Compare transitions or extract spectra at different projected radii to test which wind properties the data constrain.
+Different arrangements of clumps can produce similar spectra when the whole halo is observed at once. Compare several transitions or vary the observing aperture to see which wind models still agree with the data.
 
 (overview-fitting)=
 ## Fit observed spectra
 
-Radiative transfer libraries and a neural-network surrogate make it practical to explore the parameter space of a spectral fit. Direct transport at the fitted parameters provides a comparison with the surrogate prediction.
+A neural network learns from simulated spectra so you can compare many wind models with an observed line. Once you find a fit, you can run PEACOCK at those parameters to check the predicted spectrum.
 
 [Explore observed line profiles](examples.md#example-spectra) or [follow the C II fit to J1253−0312](fitting.md).
 

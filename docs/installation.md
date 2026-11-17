@@ -13,10 +13,10 @@ Follow the instructions for [Linux](#linux-debian-or-ubuntu), [macOS](#macos) or
 
 | Component | Used for |
 | --- | --- |
-| Python 3.9 or later | Running PEACOCK commands. Python 3.12 or 3.13 is a convenient choice for a new installation. |
-| A C compiler, `nm`, and GSL | Building the transport program. GPU preparation also needs a C++ compiler. |
-| NumPy, SciPy, and Matplotlib | Preparing GPU inputs, reading packet files, and making the tutorial spectrum. |
-| NVIDIA driver and CUDA components | GPU transport on Linux or Windows. These are additional to the CPU tools. |
+| Python 3.9 or later | Run PEACOCK commands and the plotting tool. |
+| A C compiler and the GNU Scientific Library (GSL) | Build the transport program for your computer. The platform commands below install the build tools together. GPU runs also use a C++ compiler. |
+| NumPy, SciPy, and Matplotlib | Prepare the GPU inputs and turn the simulation output into a spectrum. |
+| NVIDIA driver and CUDA tools | Let PEACOCK run the simulation on an NVIDIA GPU under Linux or Windows. |
 
 The sections below install the dependencies for the complete tutorial. OpenMP and HDF5
 are [optional](#optional-cpu-features).
@@ -120,15 +120,12 @@ that supports your GPU. Check that the driver sees the card:
 nvidia-smi
 ```
 
-The CUDA (or CUDA UMD) version shown by `nvidia-smi` describes the driver's supported CUDA version;
-it does not establish that the CUDA compiler libraries or headers are installed. NVIDIA's
-[driver documentation](https://docs.nvidia.com/deploy/nvidia-smi/index.html) explains this
-field.
+Look for your GPU model in the output. The displayed CUDA version describes what
+the driver supports. [NVIDIA explains the version field here](https://docs.nvidia.com/deploy/nvidia-smi/index.html).
 
-The following route installs matching CUDA 12.8 components directly from NVIDIA
-[Python packages](https://pypi.org/project/cuda-toolkit/12.8.2/) into the environment used by
-PEACOCK. The four packages supply the compiler library, runtime headers, random-number
-headers, and C++ headers. They do not install the GPU driver.
+Next, install the tools that build the GPU program. The commands below use a matching
+set of [NVIDIA CUDA 12.8 packages](https://pypi.org/project/cuda-toolkit/12.8.2/)
+in your PEACOCK Python environment.
 
 On Linux, with `.venv` active:
 
@@ -142,19 +139,20 @@ On Windows, in PowerShell:
 .\.venv\Scripts\python.exe -m pip install nvidia-cuda-nvrtc-cu12==12.8.93 nvidia-cuda-runtime-cu12==12.8.90 nvidia-curand-cu12==10.3.9.90 nvidia-cuda-cccl-cu12==12.8.90
 ```
 
-PEACOCK normally finds these packages automatically. CUDA 12.8 introduced compiler support
-for Blackwell targets, including the RTX 5090's `compute_120` target; an older compiler
-cannot build that target. See the [CUDA 12.8 features](https://docs.nvidia.com/cuda/archive/12.8.2/cuda-features-archive/index.html).
-The driver must support your particular card and the selected CUDA components.
-
-Continue with the [first GPU simulation](getting-started.md#nvidia-gpu). For an existing
-system CUDA Toolkit, see the [Toolkit instructions](gpu.md#use-an-existing-cuda-toolkit).
+PEACOCK normally finds these packages automatically. Continue with the
+[first GPU simulation](getting-started.md#nvidia-gpu), which shows where to specify
+your GPU model when building. The example uses CUDA 12.8 for its
+[support for the RTX 5090](https://docs.nvidia.com/cuda/archive/12.8.2/cuda-features-archive/index.html).
+If you already use a system-wide CUDA Toolkit, follow the
+[Toolkit instructions](gpu.md#use-an-existing-cuda-toolkit).
 
 (optional-cpu-features)=
 ## Optional CPU features
 
-The first simulation works without these options. Use a new build directory when enabling
-one of them, then pass that directory with `--build-dir` when running.
+The standard CPU build is enough for the tutorial. OpenMP lets several CPU threads
+follow photons at once. HDF5 adds support for reading and writing HDF5 files.
+To enable either feature, choose a new build directory and pass it to
+`--build-dir` when running.
 
 ### CPU threads with OpenMP
 

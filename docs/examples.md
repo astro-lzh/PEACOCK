@@ -9,9 +9,9 @@ The galaxy spectra below show how PEACOCK is applied to observations.
 ## Run a bundled example
 
 <span id="id4"></span>For a first run, follow the [C II tutorial](getting-started.md) and compare your output
-with the {ref}`reference C II spectrum and CSV <tutorial-spectrum>`. Reuse the same backend
-build to try another line. The following commands run the Lyα and Si II examples on a CPU, or the C IV
-doublet on an NVIDIA GPU:
+with the {ref}`reference C II spectrum and CSV <tutorial-spectrum>`. Once you have built
+PEACOCK for your CPU or GPU, you can use the same build to try another line. These
+commands run the Lyα and Si II examples on a CPU and the C IV doublet on an NVIDIA GPU.
 
 ```bash
 python3 peacock.py run --line HI1216 --backend cpu --output run/lya
@@ -29,6 +29,9 @@ the normalization for each source.
 
 ### Lyα from a Gaussian source
 
+The source emits Lyα with a Gaussian line profile. Scattering in the wind
+redistributes those photons in frequency and reshapes the line.
+
 | Setting | Value |
 | --- | --- |
 | Source spectrum | Gaussian line, $\sigma=30\,\mathrm{km}\,\mathrm{s}^{-1}$ |
@@ -45,10 +48,15 @@ the normalization for each source.
 
 ### C II in a clumpy wind
 
-For the C II continuum example, see the [full configuration, clump catalogue and wind settings](configuring-a-peacock-simulation.md).
-It follows 100,000 photons through a 150 km/s outflow.
+The C II example starts with a flat continuum, so the absorption and line emission
+in the spectrum arise in the wind. To reproduce the 100,000-photon run with a
+150 km/s outflow, use the [C II configuration and clump catalogue](configuring-a-peacock-simulation.md).
 
 ### Si II 1190
+
+Here a smooth sphere of gas absorbs and re-emits continuum photons through the
+Si II transitions. The level population ratio sets the relative numbers of ions
+in the two lower levels.
 
 | Setting | Value |
 | --- | --- |
@@ -63,6 +71,9 @@ It follows 100,000 photons through a 150 km/s outflow.
 <span id="id3"></span>
 
 ### C IV in a clumpy wind
+
+A flat continuum illuminates the same wind in both components of the C IV
+doublet. Each component scatters with its own line strength.
 
 | Setting | Value |
 | --- | --- |
@@ -81,8 +92,9 @@ It follows 100,000 photons through a 150 km/s outflow.
 
 The six panels below compare PEACOCK fits with observed galaxy spectra. Black shows
 the measured flux, gray bars show its $1\sigma$ uncertainties, and red shows the fitted profile.
-The [line guide](choosing-a-line-and-an-observable.md) lists the transitions available in the release.
-The Si III and Si IV panels show additional research applications.
+The Si III and Si IV panels illustrate research applications beyond the lines
+available in the public release. The [line guide](choosing-a-line-and-an-observable.md)
+lists the transitions you can run.
 
 ::::{container} spectrum-grid
 
@@ -115,8 +127,7 @@ This group illustrates the coupled absorption and fluorescent branches near 1190
 ```
 
 The Si III line shows deep blueshifted absorption with extended wings and a small rise
-above the continuum on the red side. This research example has no Si III selector in the
-distributed transport catalog.
+above the continuum on the red side.
 
 :::
 
@@ -167,7 +178,7 @@ transitions.
 ```
 
 Both components show distinct absorption troughs and associated re-emission in
-{ref}`Li+2026a <li-2026a>`. The current transport catalog has no Si IV selector.
+{ref}`Li+2026a <li-2026a>`.
 
 :::
 
@@ -201,17 +212,20 @@ The {ref}`spectral fitting walkthrough <dnn-tutorial>` shows how to <span id="ch
 (outputs)=
 ## Photon scattering statistics
 
-Four C II models from {ref}`Li+2026a <li-2026a>` produce similar integrated spectra
-even though their clumps intercept photons at different radii. In the legend,
-$q_{\mathrm{enc}}$ sets how quickly the encounter rate falls with radius and $\mathcal A$ sets
-its scale. Each curve combines two independent simulations of one million photon packets.
+Four winds can produce similar C II spectra even when photons scatter in different
+parts of the halo. The upper panels show where photons scatter for the first and
+last time. The lower panels count all scattering events by radius and show how many
+scatterings a photon experiences before it escapes. The models are from {ref}`Li+2026a <li-2026a>`.
 
 ```{figure} assets/research/cii-scattering-four-panel.png
 :name: id6
 :alt: Four C II models compared by first and last scattering radii, the radial distribution of scattering events, and the fraction of scattered escape packets with at least N scatters.
 :width: 100%
 
-The top row shows the first and last scattering radii for photons that scattered and escaped. Lower left shows the fraction of recorded scattering events in each $1\,\mathrm{kpc}$ radial bin, including repeated events. Lower right shows the fraction of scattered, escaping photons with at least $N$ scatters.
+In the legend, $\mathcal A$ sets how frequently clumps intercept photons at the
+reference radius, and $q_{\mathrm{enc}}$ sets how steeply that rate falls outward.
+Each curve combines two independent simulations of one million photons. The first
+and last radii and the scattering counts describe photons that scattered and escaped.
 ```
 
 As the encounter rate falls more steeply, scattering shifts inward and more escaped
@@ -237,5 +251,4 @@ For the two left panels, record the events during transport. In a copy of the CP
 configuration, add `track_output = cii-events.dat` under `[output]`. When you run
 with `--config`, this writes a new file in your working directory. Choose a fresh
 filename for each run. Within each photon's history, select the rows where
-`nscatter` increases by one. This skips
-the intervening grid and clump crossings.
+`nscatter` increases by one. This skips the intervening grid and clump crossings.

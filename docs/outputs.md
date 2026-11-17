@@ -2,9 +2,11 @@
 
 ## Read a spectrum in Python
 
-The [C II tutorial](getting-started.md) saves a spectrum with one row per velocity bin in
-`spectrum.csv`. Open `spectrum.json` alongside it to see the reference transition,
-normalization and aperture. Run this Python example from the PEACOCK source folder.
+To find the deepest part of the C II absorption line, open the `spectrum.csv`
+from the [C II tutorial](getting-started.md). Each row gives the flux in one
+velocity interval. The companion file, `spectrum.json`, tells you which transition
+sets zero velocity, how the flux was normalized and which aperture was used.
+Run the example from the PEACOCK source folder.
 
 ```python
 import json
@@ -22,8 +24,9 @@ deepest = spectrum[np.argmin(spectrum["flux"])]
 print(f"Lowest flux: {deepest['flux']:.3f} at {deepest['velocity_km_s']:.0f} km/s")
 ```
 
-For the 100,000-photon CPU tutorial, the 60 bins contain 100,000 packets. The minimum
-continuum-normalized flux is 0.635 in the bin centered at −150 km/s.
+The strongest absorption in the CPU tutorial is on the blue side of the line.
+At −150 km/s the flux is 0.635 times the incident continuum. All 100,000 packets
+fall within the 60 plotted bins.
 
 | CSV column | Unit | Meaning |
 | --- | --- | --- |
@@ -34,11 +37,13 @@ continuum-normalized flux is 0.635 in the bin centered at −150 km/s.
 | `bin_left_km_s` | km/s | Lower velocity edge of the bin. |
 | `bin_right_km_s` | km/s | Upper velocity edge of the bin. |
 
-Summing the CSV packet counts gives `binned_packets` in the JSON file. The JSON also
-records `escaped_packets` across the whole simulation and `aperture_packets` inside
-the chosen aperture. In the [T15 accelerating wind example](configuring-a-peacock-simulation.md),
-all 100,000 photons escaped, but one fell outside −600 to +600 km/s. The CSV counts
-therefore sum to 99,999.
+You can use the three counts in `spectrum.json` to follow the selection. Start
+with all photons that escaped the wind (`escaped_packets`), keep those within
+the aperture (`aperture_packets`), then count those inside the plotted velocity
+range (`binned_packets`). This last count equals the sum of the CSV packet
+counts. In the [T15 accelerating wind example](configuring-a-peacock-simulation.md),
+one of the 100,000 escaped photons fell outside −600 to +600 km/s, leaving
+99,999 in the spectrum.
 
 ## Read individual photon packets
 
@@ -90,7 +95,8 @@ scattered = nscatter > 0
 print(f"{scattered.sum():,} scattered out of {nscatter.size:,} escaped")
 ```
 
-The table compares the two 100,000-photon C II runs with the radial outflow set to 150 km/s.
+About four in every hundred photons scattered before they escaped in the C II
+tutorial. The table gives the counts for a wind moving outward at 150 km/s.
 
 | Photon count or fraction | CPU | NVIDIA RTX 5090 |
 | --- | ---: | ---: |
@@ -135,8 +141,10 @@ comparison, match the observational aperture as in the {ref}`C II fitting walkth
 
 ### Frequency and velocity
 
-The CPU ASCII column `x` gives the observer-frame frequency offset in units of the
-packet's Doppler width. Its frequency in Hz is $\nu_{\rm obs}=\nu_0+x\,\Delta\nu_D$.
+To place a photon on the spectrum, compare its frequency as seen by the observer
+with the rest frequency of the reference transition. The CPU ASCII column `x`
+gives this offset in units of the packet's Doppler width. Its frequency in Hz is
+$\nu_{\rm obs}=\nu_0+x\,\Delta\nu_D$.
 For the tutorial's CUDA C II archive, the reader adds `sc_dir_bulk` to the local `x`
 before multiplying by `Delta_nu_D` and adding $\nu_0$. For other GPU lines it uses
 `nu_final_Hz` when available or applies the frame conversion for that atomic network.
@@ -202,27 +210,26 @@ aperture and velocity range.
 
 ## Continuum normalization and bin width
 
-The quick-start C II model injects equal-weight photons uniformly from −600 to
-+600 km s⁻¹. For a velocity bin inside this window, the incident continuum would supply
-the launched packet count multiplied by the bin width and divided by the full source
-width. Dividing the escaping count by that incident count gives a continuum-normalized
-spectrum with an incident level of one.
+In the C II tutorial, a flux of one is the level expected from the source
+continuum before its light passes through the wind. The source emits equal-weight
+photons uniformly from −600 to +600 km s⁻¹. Within that window, the expected
+continuum count in each bin is the total number launched times the fraction of
+the velocity window covered by the bin. The plotter divides the escaping count
+by that expected count. You can then see how much the wind and the observing
+aperture change the flux.
 
-This normalization retains attenuation and the effect of the aperture. The plotting tool
-also gives an approximate Monte Carlo uncertainty from the square root of the escaping
-count in each bin. More photons reduce this sampling noise.
-
-The default is 60 bins spanning the injected continuum window, which is −600 to
-+600 km s⁻¹ for the quick-start case. For example, to use a smaller aperture and finer
-velocity bins:
+The default plot divides the continuum window into 60 bins. For narrower bins
+and a smaller aperture, run the plotter again on the same output.
 
 ```bash
 python3 tools/plot_spectrum.py run/cii --bins 120 --velocity-range -600 600 --aperture-pc 250 --output run/cii/spectrum-aperture.png
 ```
 
-Narrow bins resolve finer features but contain fewer packets. Compare spectra on the
-same velocity edges and with the same normalization, and increase the packet count when
-a result depends on a weak feature.
+Narrow bins resolve finer features but contain fewer packets each. The
+`mc_sigma` column estimates the resulting sampling noise from the square root
+of each bin's count, scaled to the same continuum. More photons reduce the
+noise. When comparing weak features, use the same velocity edges and normalization
+for both spectra.
 
 ### Intrinsic line sources
 

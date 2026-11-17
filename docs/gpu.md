@@ -2,27 +2,30 @@
 (gpu-setup-and-advanced-workflows)=
 # GPU and cluster runs
 
-For your first C II spectrum, follow the Linux or Windows commands in
-[the C II tutorial](getting-started.md#nvidia-gpu). Use this page to look up your
-GPU target, configure an existing CUDA Toolkit, or [submit a single-GPU Slurm job](#run-c-ii-on-one-gpu-with-slurm).
+For a first spectrum on your own GPU, follow the [C II tutorial](getting-started.md#nvidia-gpu).
+Use the table below to find the build option for your graphics card. On a shared
+cluster, you can [submit the same simulation as a Slurm job](#run-c-ii-on-one-gpu-with-slurm).
 
 (gpu-requirements)=
 ## Install the GPU requirements
 
-Follow [Installation](installation.md#add-gpu-support-on-linux-or-windows) to install
-the host tools, Python environment, NVIDIA driver, and CUDA components. Use Linux or
-Windows with a CUDA-capable NVIDIA GPU.
+Follow the [GPU installation steps](installation.md#add-gpu-support-on-linux-or-windows)
+on Linux or Windows. The CPU prepares the wind and the initial photons, and your
+NVIDIA GPU follows those photons through the gas. The installation supplies tools
+for both steps.
 
 ## Choose your GPU target
 
-The target tells the compiler which GPU instructions to generate. First find the GPU model:
+PEACOCK needs to know which generation of GPU will run the simulation. First
+find the model name of your card.
 
 ```text
 nvidia-smi --query-gpu=name,driver_version --format=csv
 ```
 
-Find that exact model in [NVIDIA's compute-capability table](https://developer.nvidia.com/cuda-gpus).
-For example, capability 8.6 corresponds to the PEACOCK argument `--arch compute_86`.
+If your card appears below, copy the build argument from its row. For other cards,
+look up the model in [NVIDIA's compute-capability table](https://developer.nvidia.com/cuda-gpus).
+For example, a compute capability of 8.6 gives `--arch compute_86`.
 
 | GPU example | Compute capability | Build argument |
 | --- | --- | --- |
@@ -32,25 +35,24 @@ For example, capability 8.6 corresponds to the PEACOCK argument `--arch compute_
 | NVIDIA A100 | 8.0 | `--arch compute_80` |
 | NVIDIA H100 | 9.0 | `--arch compute_90` |
 
-The installed CUDA compiler must also support the target. In particular, `compute_120`
-requires CUDA 12.8 or later. Explicitly pass your target when building; the command-line
-default is `compute_120`.
+Pass this argument when you build. The default, `compute_120`, targets cards such
+as the RTX 5090 and requires CUDA 12.8 or later.
 
 (single-gpu-slurm)=
 ## Run C II on one GPU with Slurm
 
-This job runs the [C II tutorial](getting-started.md#nvidia-gpu) on a cluster.
-It follows 100,000 photons through 685 clumps in a 150 km/s radial outflow, then plots
-the escaping spectrum. The script reads the configuration and clump catalogue from
-[PEACOCK 1.0.2](download.md).
+Slurm is the scheduler that reserves a GPU for your job. The script runs the
+[C II tutorial](getting-started.md#nvidia-gpu) from [PEACOCK 1.0.2](download.md)
+and writes the spectrum when the calculation finishes. It uses the same 100,000
+photons and 150 km/s wind as the tutorial.
 
 ### Set up the environment once
 
-On the login node, extract PEACOCK on a filesystem shared with the compute nodes. Open
-the directory containing `peacock.py` and save {download}`cii-one-gpu.slurm <assets/examples/cii/cii-one-gpu.slurm>`
-there. Use `module avail` to find your site's C/C++ compiler, GSL and Python modules.
-In the commands below and in the script, replace `gcc gsl python` with the same
-module names and versions. The cluster supplies the NVIDIA driver on its GPU nodes.
+Log in to the cluster and extract PEACOCK in a directory that your GPU jobs can
+also read. Save {download}`cii-one-gpu.slurm <assets/examples/cii/cii-one-gpu.slurm>`
+beside `peacock.py`. Run `module avail` to see which compilers, GSL and Python
+versions the cluster offers. Use your site's module names in both the commands
+below and the job script. The cluster supplies the NVIDIA driver.
 
 ```bash
 module load gcc gsl python
@@ -111,8 +113,9 @@ sbatch --partition=gpu --gres=gpu:a100:1 cii-one-gpu.slurm compute_80 build/cuda
 (build-once-and-run-the-c-ii-example)=
 ## Run a different line
 
-After the [first GPU run](getting-started.md#nvidia-gpu), the compiled CUDA module runs
-all 14 packaged line profiles. Use `--line` to select the atomic data. For example,
+After the [first GPU run](getting-started.md#nvidia-gpu), reuse the same build for any
+line in the [line table](choosing-a-line-and-an-observable.md).
+These commands switch from C II to C IV and Si II by changing `--line`.
 
 ```bash
 python3 peacock.py run --line CIV1548 --backend cuda --build-dir build/cuda --output run/civ
@@ -145,8 +148,10 @@ finds these locations automatically.
 (gpu-staged)=
 ## Prepare and execute separately
 
-For a batch of simulations or a compute cluster, input preparation and GPU execution can
-be separate steps. Both use the same build and selected line:
+On a cluster you may want to prepare the wind before your reserved GPU time
+begins. `prepare` saves the cloud grid and initial photon packets to a directory.
+`execute` reads that directory and runs the transport. Use the same build and
+line in both commands.
 
 ```bash
 python3 peacock.py prepare --line CII1334 --build-dir build/cuda --config examples/cii/quickstart.cfg --clump-file examples/cii/quickstart-clumps.txt --output run/cii-staged
@@ -174,8 +179,9 @@ job. Module names are specific to the cluster.
 
 ## Control GPU memory use
 
-The `--batch` option controls the number of packets processed together; its default is
-1024. A smaller value can reduce packet-buffer memory use:
+If a run is short on GPU memory, try handling fewer photons at once.
+The example below reduces the group size from the default of 1,024 to 256
+with `--batch`. The total number of photons in the simulation stays the same.
 
 ```bash
 python3 peacock.py run --line CII1334 --backend cuda --build-dir build/cuda --config examples/cii/quickstart.cfg --clump-file examples/cii/quickstart-clumps.txt --batch 256 --output run/cii-small-batch
