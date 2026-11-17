@@ -54,8 +54,9 @@ The lower panel shows direct radiative transfer minus the DNN prediction, in uni
 ```
 
 Download both files to the extracted PEACOCK source directory, beside `peacock.py`.
-The script and data let you replay the published fit with NumPy and compare the predicted spectrum with two saved transport runs. To train a new network, follow step 3 with your own
-library of model parameters and binned spectra.
+You can replay the published fit with NumPy, [run a new fit](#run-a-new-fit) with the
+trained network, and compare the published best-fit spectrum with two saved transport
+runs. To train your own network, follow step 3 with your own model library.
 
 - {download}`Python walkthrough <assets/research/cii-dnn-example.py>`
 - {download}`J1253 C II example data <assets/research/cii-dnn-fit-data.npz>`
@@ -150,24 +151,89 @@ spectrum. Apply the fixed velocity offset and continuum scale, integrate over th
 pixels and compare with the measured flux. The fit used observational variance plus the
 training library’s estimated packet variance.
 
-For a new fit, use the same binning and normalization as the observations. Score each
-trial by summing the squared data–prediction residuals divided by the corresponding
-variances. Search within the parameter ranges used to train the network and save the
-best-scoring point.
-
 The replay evaluates the saved network at all 3,606 archived candidate samples and
 recomputes their likelihood ranking. It selects the original maximum-likelihood sample and
-writes the model and data on the same velocity grid. A fresh nested fit would generate a
-new set of samples.
+writes the model and data on the same velocity grid.
 
 ```bash
 python3 cii-dnn-example.py replay cii-dnn-fit-data.npz --output cii-comparison.csv
 ```
 
+#### Run a new fit
+
+How well does the observed C II profile constrain the wind? Start with the
+{download}`fitting script <assets/research/cii-dnn-example.py>` and
+{download}`J1253−0312 data and trained network <assets/research/cii-dnn-fit-data.npz>`
+in the same directory. The `fit` command draws fresh samples using the saved
+network. It runs on a CPU with the following commands.
+
+```bash
+python3 -m pip install "dynesty==3.2.0" matplotlib
+python3 cii-dnn-example.py fit cii-dnn-fit-data.npz --seed 17 --output run/j1253-seed17
+```
+
+To define the prior, start with three independent uniform coordinates
+$u_1,u_2,u_3$ between zero and one. The following transformation gives the
+physical inputs supplied to the DNN.
+
+| Parameter | Prior used in this fit | Value passed to the prediction function |
+| --- | --- | --- |
+| Clump encounter rate $A$ at 1 kpc | Uniform in $\log_{10}(A/\mathrm{kpc}^{-1})$ for $1\leq A/\mathrm{kpc}^{-1}\leq9$ | $A=9^{u_1}\,\mathrm{kpc}^{-1}$ |
+| Radial slope $q$ of the encounter rate | Uniform from 1 to 3, dimensionless | $q=1+2u_2$ |
+| Reference lower-level C II column through one clump radius, $\ell=\log_{10}(N_1/\mathrm{cm}^{-2})$ | Uniform from 14.3 to 15.3 in $\ell$ | $\ell=14.3+u_3$ |
+
+The prediction function takes $A$ in physical units and applies the logarithm
+internally. It maps each trial spectrum onto the 50 observed pixels. A Gaussian
+likelihood compares the predicted and observed fluxes using the fixed variance
+of each pixel, including observational and Monte Carlo contributions.
+The tutorial uses 300 live points and the static sampler's `dlogz=0.05` stopping
+criterion for the estimated remaining contribution to the log evidence.
+
+Each run writes `posterior.npz` (parameter samples and their normalized posterior
+weights), `summary.json` (weighted quantiles and run settings), and `corner.png`.
+The script obtains the weights with `results.importance_weights()` and passes them
+to `dynesty.utils.quantile`. The [dynesty corner plot](https://dynesty.readthedocs.io/en/v3.2.0/quickstart.html#corner-plots)
+uses the same weights for the one- and two-parameter distributions.
+
+```{figure} assets/research/cii-j1253-posterior-corner.png
+:alt: Posterior distributions for A, q and the logarithmic C II column. The upward slope of the A–q contours shows that larger encounter rates at one kiloparsec are favored together with steeper radial declines.
+:width: 85%
+
+J1253−0312 C II fit with seed 17. Dashed lines on the diagonal mark the 16th,
+50th and 84th percentiles. The contours enclose approximately 68% and 95% of the
+joint posterior for each pair. The upward slope in the $A$–$q$ panel shows that
+a higher clump encounter rate at 1 kpc can compensate for a steeper decline with
+radius in this wind model.
+```
+
+To check sensitivity to the sampling seed, repeat the fit in a fresh output
+directory with the same network, data, priors and sampler settings.
+
+```bash
+python3 cii-dnn-example.py fit cii-dnn-fit-data.npz --seed 43 --output run/j1253-seed43
+```
+
+Each entry below is the posterior median with its equal-tailed 16th–84th
+percentile interval.
+
+| Parameter | Seed 17 | Seed 43 |
+| --- | --- | --- |
+| $A$ (kpc⁻¹) | 5.58 [3.08, 7.26] | 5.63 [3.21, 7.32] |
+| $q$ | 1.594 [1.234, 1.836] | 1.606 [1.276, 1.820] |
+| $\log_{10}(N_1/\mathrm{cm}^{-2})$ | 14.653 [14.506, 14.909] | 14.644 [14.497, 14.907] |
+
+All three medians shifted by less than 2.4% of their seed-17 interval widths.
+Both runs give a broad range of allowed $A$ and the same positive correlation
+between $A$ and $q$. Download the weighted samples for
+{download}`seed 17 <assets/research/cii-j1253-posterior-seed17.npz>` or
+{download}`seed 43 <assets/research/cii-j1253-posterior-seed43.npz>` to examine
+these distributions. Column order is recorded in `parameter_names`.
+
 (j1253-validation)=
 ### 5. Rerun transport at the fitted parameters
 
-The selected point has $A=6.375\,\mathrm{kpc}^{-1}$, $q=1.685$ and $\log_{10} N_1=14.576$. Keep the cloud
+The maximum-likelihood point from the archived fit has $A=6.375\,\mathrm{kpc}^{-1}$,
+$q=1.685$ and $\log_{10} N_1=14.576$. Keep the cloud
 geometry, source and observing settings fixed, then change the photon seeds and rerun the
 full simulation. Bin both direct spectra with the same aperture, normalization, velocity
 shift, pixel edges and flux scale as the DNN prediction.

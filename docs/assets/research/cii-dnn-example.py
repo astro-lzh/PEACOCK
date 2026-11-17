@@ -1,7 +1,9 @@
-"""Replay the J1253-0312 C II spectral fit or bin a PEACOCK ASCII packet file."""
+"""Fit the J1253-0312 C II spectrum, replay the archived fit or bin photon packets."""
 
 import argparse
+import json
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
 
@@ -28,6 +30,80 @@ def predict(theta, data):
             h = np.maximum(h, 0.0)
     fine = np.maximum(h * data["yscale"] + data["ymean"], 1e-12)
     return apply_observation(fine, data)[1]
+
+
+def prior_transform(unit):
+    """Independent uniform priors in log10(A), q and log10(N1)."""
+    return np.array([9.0**unit[0], 1.0 + 2.0 * unit[1], 14.3 + unit[2]])
+
+
+def new_fit(data, output, seed, nlive, dlogz):
+    import dynesty
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from dynesty import plotting, utils
+    from matplotlib import pyplot as plt
+
+    if output.exists():
+        raise FileExistsError(f"Choose a new output directory for this fit: {output}")
+    if nlive < 4 or not np.isfinite(dlogz) or dlogz <= 0:
+        raise ValueError("Use at least four live points and a positive finite dlogz.")
+
+    # Cache the arrays once so each likelihood call evaluates only the network.
+    data = dict(data)
+    observed = data["observed"]
+    variance = data["likelihood_variance"]
+    normalization = np.log(2 * np.pi * variance).sum()
+
+    def loglike(theta):
+        residual = observed - predict(theta, data)
+        return -0.5 * (np.sum(residual**2 / variance) + normalization)
+
+    sampler = dynesty.NestedSampler(loglike, prior_transform, ndim=3, nlive=nlive,
+                                    bound="multi", sample="rwalk",
+                                    rstate=np.random.default_rng(seed))
+    sampler.run_nested(dlogz=dlogz, print_progress=False)
+    results = sampler.results
+    weights = results.importance_weights()
+    names = ("A", "q", "log10_N1")
+    levels = (0.16, 0.50, 0.84)
+    quantiles = {}
+    for name, samples in zip(names, results.samples.T):
+        p16, median, p84 = utils.quantile(samples, levels, weights=weights)
+        quantiles[name] = {"p16": float(p16), "median": float(median), "p84": float(p84)}
+    summary = {
+        "dynesty_version": dynesty.__version__, "seed": seed, "nlive": nlive,
+        "dlogz": dlogz, "bound": "multi", "sample": "rwalk",
+        "likelihood_calls": int(np.sum(results.ncall)), "samples": len(weights),
+        "effective_samples": float(1.0 / np.sum(weights**2)),
+        "parameters": quantiles,
+    }
+    labels = [r"$A$ [$\mathrm{kpc}^{-1}$]", r"$q$",
+              r"$\log_{10}(N_1/\mathrm{cm}^{-2})$"]
+    fig, _ = plotting.cornerplot(
+        results, labels=labels, color="#176776", span=[0.999] * 3,
+        quantiles=levels, quantiles_2d=[0.68, 0.95], show_titles=True,
+        title_quantiles=levels, title_fmt=".2f", title_kwargs={"fontsize": 10},
+        max_n_ticks=4,
+        hist2d_kwargs={"plot_datapoints": False},
+    )
+    fig.subplots_adjust(hspace=0.14, wspace=0.10)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with TemporaryDirectory(dir=output.parent) as temp:
+        staged = Path(temp) / "fit"
+        staged.mkdir()
+        fig.savefig(staged / "corner.png", dpi=160, bbox_inches="tight")
+        plt.close(fig)
+        np.savez_compressed(staged / "posterior.npz", parameter_names=names,
+                            samples=results.samples, weights=weights,
+                            logl=results.logl, logwt=results.logwt)
+        (staged / "summary.json").write_text(json.dumps(summary, indent=2) + "\n",
+                                             encoding="utf-8")
+        staged.rename(output)
+    for name, values in quantiles.items():
+        print(f"{name}: {values['median']:.4f} [{values['p16']:.4f}, {values['p84']:.4f}]")
+    print(f"Saved posterior.npz, summary.json and corner.png in {output}")
 
 
 def replay(data, output):
@@ -95,9 +171,15 @@ def bin_packets(data, packet_path, output):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
-    fit = sub.add_parser("replay", help="Re-score the saved candidates and compare independent RT")
+    archived = sub.add_parser("replay", help="Re-score the saved candidates and compare independent RT")
+    archived.add_argument("data", type=Path)
+    archived.add_argument("--output", type=Path)
+    fit = sub.add_parser("fit", help="Sample a fresh posterior with the saved DNN and observed spectrum")
     fit.add_argument("data", type=Path)
-    fit.add_argument("--output", type=Path)
+    fit.add_argument("--output", type=Path, required=True, help="New directory for fit results")
+    fit.add_argument("--seed", type=int, default=17, help="Nested-sampling random seed")
+    fit.add_argument("--nlive", type=int, default=300, help="Number of live points")
+    fit.add_argument("--dlogz", type=float, default=0.05, help="Evidence-based stopping threshold")
     bins = sub.add_parser("bin", help="Make one spectrum from C II ASCII escape packets")
     bins.add_argument("data", type=Path)
     bins.add_argument("packets", type=Path, help="An ASCII packet file or its run directory")
@@ -106,6 +188,8 @@ def main():
     with np.load(args.data, allow_pickle=False) as data:
         if args.command == "replay":
             replay(data, args.output)
+        elif args.command == "fit":
+            new_fit(data, args.output, args.seed, args.nlive, args.dlogz)
         else:
             bin_packets(data, args.packets, args.output)
 
