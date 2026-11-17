@@ -35,9 +35,9 @@ Radiative transfer libraries and a neural-network surrogate make it practical to
 (overview-start)=
 ## Use PEACOCK
 
-Choose a line and run a bundled transport example before configuring your own wind.
+Install PEACOCK, run a C II example on a CPU or GPU, and turn the escaping photons into a spectrum. Then choose another supported line or configure your own wind.
 
-[Get started](getting-started.md), [explore the physical model](models.md) or [see example spectra](examples.md).
+[Get started](getting-started.md), [check installation for your computer](installation.md), [explore the physical model](models.md) or [see example spectra](examples.md).
 
 ```{toctree}
 :caption: Model and examples
@@ -55,7 +55,10 @@ fitting
 :hidden:
 
 getting-started
+installation
 gpu
+outputs
+troubleshooting
 download
 ```
 

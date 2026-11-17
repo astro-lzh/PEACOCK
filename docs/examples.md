@@ -3,11 +3,36 @@
 Explore how different transitions record absorption, scattering and re-emission in
 galactic winds.
 
+(first-spectrum)=
+## Start with a C II simulation
+
+The [getting-started tutorial](getting-started.md) runs a complete synthetic C II model
+and plots its escaping spectrum. It uses one configuration and one clump catalogue for
+CPU and GPU runs. The example has a flat continuum source and 50 pc clumps with both
+random cloud motion and radial outflow. Clump centers lie beyond
+100 pc, and each complete clump fits inside the 950 pc outer boundary.
+
+```{figure} assets/research/quickstart-cii-spectrum.png
+:alt: Continuum-normalized C II spectrum from the shared quick-start model, plotted against redward-positive velocity relative to C II 1334.53 angstroms.
+:width: 100%
+
+The shared C II example with 4,096 launched photons. The incident continuum is normalized to one. Sampling noise is visible at this small packet count.
+```
+
+Use the [example model settings](#configurations) below to inspect the physical inputs.
+The [output guide](outputs.md) explains velocity bins, aperture selection and the saved
+data table.
+
+{download}`Download the plotted spectrum (CSV) <assets/research/quickstart-cii-spectrum.csv>`
+
 (spectra)=
 ## Example spectra
 
 Black shows the measured spectrum, gray bars show its $1\sigma$ uncertainties and red
-shows the fitted profile.
+shows the fitted profile. These observed fits illustrate research applications of
+PEACOCK. The {ref}`distributed line catalog <lines>` lists the selections available
+to run with the current source download; the Si III and Si IV research examples below
+have no bundled command-line selector.
 
 ::::{container} spectrum-grid
 
@@ -40,7 +65,8 @@ This group illustrates the coupled absorption and fluorescent branches near 1190
 ```
 
 The Si III line shows deep blueshifted absorption with extended wings and a small rise
-above the continuum on the red side.
+above the continuum on the red side. This research example has no Si III selector in the
+distributed transport catalog.
 
 :::
 
@@ -133,6 +159,10 @@ The lower panel shows direct radiative transfer minus the DNN prediction, in uni
 Follow a real ultraviolet spectrum from escaping photon packets to a binned spectrum, a
 neural-network prediction and two independent radiative transfer checks.
 
+Start with the [small synthetic run](getting-started.md) if this is your first PEACOCK
+calculation. The walkthrough here adds the aperture, observed pixel grid and surrogate
+used for a particular galaxy fit.
+
 - {download}`Python walkthrough <assets/research/cii-dnn-example.py>`
 - {download}`J1253 C II example data <assets/research/cii-dnn-fit-data.npz>`
 
@@ -186,7 +216,8 @@ FCC generator, tools/fcc_clump_geometry.py, takes that count with --n-clouds and
 with --volume-beta.
 
 Use the entire position file for catalogue placement and point TLAC_CLUMP_FILE to it. In
-the cloud section, set the hydrogen column to $10^\ell\,\mathrm{cm}^{-2}$, where $\ell=\log_{10}(N_1/\mathrm{cm}^{-2})$. Run and
+the cloud section, set the reference lower-level C II column to $10^\ell\,\mathrm{cm}^{-2}$,
+where $\ell=\log_{10}(N_1/\mathrm{cm}^{-2})$. Run and
 bin one spectrum for each parameter row. Stack the fine spectra in the same row order as
 the parameters and save them as theta and fine in library.npz. Recreating the archived
 J1253 network requires its full training library and catalogue construction.
@@ -302,20 +333,23 @@ configuration to see the full set of inputs.
 
 ### C II 1334/1335
 
+These are the settings used by the shared quick-start configuration.
+
 | Setting | Value |
 | --- | --- |
 | Source spectrum | Flat continuum, $\pm600\,\mathrm{km}\,\mathrm{s}^{-1}$ |
-| Clump shell | $100\text{–}950\,\mathrm{pc}$ |
+| Clump placement | Centers beyond $100\,\mathrm{pc}$; complete clumps inside $950\,\mathrm{pc}$ |
 | Clump radius | $50\,\mathrm{pc}$ |
 | Filling factor | $10\%$ |
-| Radial ion column | $3\times10^{15}\,\mathrm{cm}^{-2}$ |
-| Clump temperature | $\approx 1.8\times10^{4}\,\mathrm{K}$ |
+| Ion column across one clump radius | $3\times10^{15}\,\mathrm{cm}^{-2}$ |
+| Clump temperature | $10^{4}\,\mathrm{K}$ |
 | Clump motion | $25\,\mathrm{km}\,\mathrm{s}^{-1}$ dispersion per axis and $80\,\mathrm{km}\,\mathrm{s}^{-1}$ radial outflow |
 | Level population ratio | $n_2/n_1=0.3$ |
 
-The temperature in this example corresponds to a C II thermal Doppler parameter of $5\,\mathrm{km}\,\mathrm{s}^{-1}$.
+The same complete catalogue supplies the clump positions to CPU and GPU runs.
 
-{download}`View the bundled configuration <assets/research/run-cii.cfg>`
+- {download}`View the quick-start configuration <assets/examples/cii/quickstart.cfg>`
+- {download}`Download its clump catalogue <assets/examples/cii/quickstart-clumps.txt>`
 
 ### Si II 1190
 

@@ -7,6 +7,27 @@ scientific interpretation.
 
 ## Code release
 
+### Current version: 1.0.1
+
+Li, Z., & Gronke, M. (2026). *PEACOCK: Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics* (Version 1.0.1) [Computer software]. [GitHub](https://github.com/astro-lzh/PEACOCK).
+
+The [current source download](download.md) includes the common C II tutorial inputs and
+spectrum plotting tool. Record **1.0.1** when using this package. The DOI below identifies
+the separately archived **1.0** release.
+
+```bibtex
+@software{li_gronke_peacock_1_0_1,
+  author  = {Li, Zhihui and Gronke, Max},
+  title   = {{PEACOCK}: Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics},
+  year    = {2026},
+  month   = nov,
+  version = {1.0.1},
+  url     = {https://github.com/astro-lzh/PEACOCK}
+}
+```
+
+### Archived version: 1.0
+
 Li, Z., & Gronke, M. (2026). *PEACOCK: Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics* (Version 1.0) [Computer software]. Zenodo. [https://doi.org/10.5281/zenodo.24206426](https://doi.org/10.5281/zenodo.24206426).
 
 Cite this DOI when using PEACOCK 1.0 and record the version with your

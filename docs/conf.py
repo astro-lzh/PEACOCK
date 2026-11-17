@@ -6,8 +6,8 @@ import os
 project = "PEACOCK"
 author = "Zhihui Li and Max Gronke"
 copyright = "2026, Zhihui Li and Max Gronke"
-version = "1.0"
-release = "1.0"
+version = "1.0.1"
+release = "1.0.1"
 
 extensions = ["myst_parser", "sphinx.ext.mathjax"]
 source_suffix = {".md": "markdown"}
