@@ -4,7 +4,8 @@ PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex K
 
 (overview-start)=
 (use-peacock)=
-## Your first spectrum
+(your-first-spectrum)=
+## Getting started
 
 1. [Download and install PEACOCK](installation.md) on Linux, macOS or Windows.
 2. [Run the C II tutorial](getting-started.md) to build the code, launch 100,000 photons and plot the escaping spectrum.
