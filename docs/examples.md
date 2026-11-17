@@ -12,7 +12,7 @@ CPU and GPU runs. The example has a flat continuum source and 50 pc clumps with 
 random cloud motion and radial outflow. Clump centers lie beyond
 100 pc, and each complete clump fits inside the 950 pc outer boundary.
 
-```{figure} assets/research/quickstart-cii-spectrum.png
+```{figure} assets/research/cii-100k-v150-spectrum.png
 :alt: Continuum-normalized C II spectrum from the shared quick-start model, plotted against redward-positive velocity relative to C II 1334.53 angstroms.
 :width: 100%
 
@@ -23,7 +23,7 @@ Use the [example model settings](#configurations) below to inspect the physical 
 The [output guide](outputs.md) explains velocity bins, aperture selection and the saved
 data table.
 
-{download}`Download the plotted spectrum (CSV) <assets/research/quickstart-cii-spectrum.csv>`
+{download}`Download the plotted spectrum (CSV) <assets/research/cii-100k-v150-spectrum.csv>`
 
 (spectra)=
 ## Example spectra

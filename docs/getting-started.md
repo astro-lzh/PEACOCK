@@ -110,11 +110,11 @@ Velocity is measured relative to C II 1334.53 Å. Negative velocity is blueward 
 velocity is redward. The plot uses the injected flat continuum to set a continuum level
 of one.
 
-```{figure} assets/research/quickstart-cii-spectrum.png
+```{figure} assets/research/cii-100k-v150-spectrum.png
 :alt: C II spectrum from the tutorial run, with velocity on the horizontal axis and flux relative to the injected continuum on the vertical axis.
 :width: 100%
 
-The C II spectrum for the 100,000-photon example with a 150 km s⁻¹ radial outflow. The shaded band shows approximate Monte Carlo sampling uncertainty.
+With 100,000 photons and a 150 km s⁻¹ radial outflow, the deepest C II absorption is centered at −150 km s⁻¹, where the flux falls to 0.635 of the incident continuum. The shaded band shows approximate Monte Carlo sampling uncertainty.
 ```
 
 Independent runs sample different photon paths. When comparing CPU and GPU spectra, use
