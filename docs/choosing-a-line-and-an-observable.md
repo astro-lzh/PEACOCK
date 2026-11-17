@@ -37,32 +37,33 @@ spectrum and a plotting window wide enough for the components you want to study.
 | The projected aperture, velocity bins, or displayed velocity range | **Replot the saved packets.** The escape position, direction and frequency already determine which photons enter each bin. |
 | Continuum-normalized flux or unit-area line shape | **Replot the saved packets** using the normalization appropriate for the injected source and the quantity you want to compare. |
 
-## How much C II light falls outside a 500 pc aperture?
+(cii-aperture-comparison)=
+## How much C II light falls outside a 250 pc aperture?
 
 Both curves below use the same 100,000 photons from the [C II tutorial](getting-started.md),
 with clumps moving radially outward at 150 km/s. The full aperture includes every
 escaping ray. The smaller aperture keeps rays that pass within a projected radius of
-500 pc of the source. Both average over escape directions and use the same 20 km/s bins
+250 pc of the source. Both average over escape directions and use the same 20 km/s bins
 and the same injected continuum.
 
-```{figure} assets/research/cii-100k-v150-apertures.png
-:alt: C II spectra through the full and 500 pc apertures. The blue absorption minimum changes little, while the smaller aperture collects less redshifted emission.
+```{figure} assets/research/cii-100k-v150-full-vs-250pc.png
+:alt: Full-aperture and 250 pc C II spectra have nearly identical blue absorption troughs. The 250 pc aperture collects less red emission, with the largest difference near +350 km/s.
 :width: 100%
 
-The 500 pc aperture retains 98,843 of the 100,000 escaping photons. The absorption
-minimum stays at −150 km/s in both spectra. The lower panel shows the light falling
-outside 500 pc. Its largest contribution is in the bin centered at +270 km/s, where
-the normalized flux falls from 1.151 to 1.088 when the aperture is reduced.
+The 250 pc aperture retains 97,352 of the 100,000 escaping photons. Both spectra reach
+their absorption minimum at −150 km/s. The lower panel shows the light falling outside
+250 pc. The difference is largest in the bin centered at +350 km/s, where the flux
+drops from 1.198 to 1.077 times the incident continuum.
 ```
 
-{download}`Download the plotted fluxes and packet counts (CSV) <assets/research/cii-100k-v150-apertures.csv>`
+{download}`Download the plotted fluxes and packet counts (CSV) <assets/research/cii-100k-v150-full-vs-250pc.csv>`
 
 To reproduce the two spectra from the completed tutorial, run these commands in the
 PEACOCK source directory. Replace `run/cii` with your run directory if needed.
 
 ```bash
 python3 tools/plot_spectrum.py run/cii --bins 60 --velocity-range -600 600 --normalization continuum --output run/cii/full.png
-python3 tools/plot_spectrum.py run/cii --bins 60 --velocity-range -600 600 --normalization continuum --aperture-pc 500 --output run/cii/500pc.png
+python3 tools/plot_spectrum.py run/cii --bins 60 --velocity-range -600 600 --normalization continuum --aperture-pc 250 --output run/cii/250pc.png
 ```
 
 ## Which normalization should I compare?
@@ -71,7 +72,7 @@ python3 tools/plot_spectrum.py run/cii --bins 60 --velocity-range -600 600 --nor
 `--normalization continuum`, as in the C II example above. Each bin is divided by the
 number of photons the source injected there *on average*. A value of one is the
 unattenuated continuum within the injected window. Using this same denominator for
-both apertures preserves the light lost outside 500 pc.
+both apertures preserves the light lost outside 250 pc.
 
 **For the shape of an intrinsic emission line**, use `--normalization probability`.
 For example, the bundled Lyα CPU example injects a Gaussian emission line. To compare

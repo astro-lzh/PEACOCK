@@ -91,7 +91,7 @@ The default is 60 bins spanning the injected continuum window, which is −600 t
 velocity bins:
 
 ```bash
-python3 tools/plot_spectrum.py run/cii --bins 120 --velocity-range -600 600 --aperture-pc 500 --output run/cii/spectrum-aperture.png
+python3 tools/plot_spectrum.py run/cii --bins 120 --velocity-range -600 600 --aperture-pc 250 --output run/cii/spectrum-aperture.png
 ```
 
 Narrow bins resolve finer features but contain fewer packets. Compare spectra on the
@@ -124,7 +124,7 @@ all-sky spectrum. Without `--aperture-pc`, it includes all escaping packets. Sup
 aperture radius in parsecs to select a smaller projected region. Use the same physical
 aperture when comparing models with an observed spectrum. A smaller aperture can remove
 extended scattered emission while retaining the compact continuum source.
-The [C II aperture comparison](choosing-a-line-and-an-observable.md#how-much-c-ii-light-falls-outside-a-500-pc-aperture)
+The {ref}`C II aperture comparison <cii-aperture-comparison>`
 shows this effect using two spectra extracted from the same run.
 
 The {ref}`C II fitting walkthrough <dnn-tutorial>` shows a separate example with an
