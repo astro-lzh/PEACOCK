@@ -35,7 +35,7 @@ In an outflow, approaching clumps can absorb the galaxy’s light at blueshifted
 (model-absorption-and-re-emission-together)=
 ### Trace resonant scattering and fluorescence
 
-Resonant scattering can redirect light into the line of sight and partly fill an absorption trough. Si II, for example, can re-emit light absorbed at 1526.7 Å in that same transition or in a fluorescent line at 1533.4 Å.
+Resonant scattering can redirect light into the line of sight and partly fill an absorption trough. PEACOCK follows a [network of transitions](models.md#radiative-decay-and-re-emission) linked by shared atomic levels. After absorbing a photon, an ion can return to its original level and emit in the same line, or decay to a different lower level and emit in a fluorescent line. The relative decay rates determine how often each path is taken.
 
 (assess-what-line-profiles-reveal-about-the-wind)=
 ### Compare wind models across lines and apertures
