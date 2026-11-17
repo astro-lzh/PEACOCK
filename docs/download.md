@@ -9,9 +9,7 @@ Use this page to retrieve a particular version of PEACOCK. For a first installat
 
 {download}`Download PEACOCK 1.0.2 source (ZIP) <assets/PEACOCK-1.0.2.zip>`
 
-The tutorial uses this archive. Its C II example follows 100,000 photons through
-clumps moving outward at 150 km/s. It includes the configuration, a catalogue of 685
-clumps, and a tool for plotting the resulting spectrum.
+The download includes the source code and examples.
 
 See [Citing PEACOCK](citing.md) for the software and paper references.
 
