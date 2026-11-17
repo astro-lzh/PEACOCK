@@ -139,7 +139,7 @@ select options. They have no physical units, as with counts, seeds and flags.
 | --- | --- | --- |
 | `clouds`, `cloud_mode_schema` | `(cloud1)`, `2` | Use the population defined by the `[cloud1]` section and version 2 of the placement and motion settings. |
 | `cloud_placing_modes` | `(3)` | Read the complete catalogue of clump centers. Its three Cartesian coordinates, `x y z`, are in **cm**. Pass this file with `--clump-file` when running an edited copy of the configuration. |
-| `cloud_filling_factors` | `(0.1)` | Target fraction of the shell volume occupied by clumps. With the given radii this sets a count of 685, matching the supplied catalogue. |
+| `cloud_filling_factors` | `(0.1)` | Clumps occupy about 10% of the shell volume in this example. At fixed shell and clump sizes, a larger filling factor requires more clumps. |
 | `cloud_rin`, `cloud_rout` | `(100)`, `(950)` | Placement bounds in pc. In the supplied catalogue, clump centers lie beyond 100 pc and each entire clump fits inside 950 pc. Changing the shell, filling factor or clump radius requires a matching catalogue. |
 | `random_seed` | `31415` | Integer seed used during grid construction, including the random clump velocities. Catalogue positions come from the file. If the grid seed is omitted, the grid uses the run seed. |
 | `cloud_motion_modes`, `cloud_motion_params` | `((2,1))`, `((25,150,0,0,0,0))` | Add independent Gaussian velocities with a 25 km/s dispersion in each Cartesian component to an outward radial speed of 150 km/s. These two modes use the first two parameters. |
@@ -156,9 +156,9 @@ atomic network.
 
 Start with `my-clumps-pc.txt`, a plain text file with one clump center per row and
 three space-separated columns, `x y z`, in parsecs relative to the halo center.
-For the C II configuration above, supply **685 clumps of radius 50 pc**. Each
-center must lie at least 100 pc from the origin, and the outer surface of every
-clump must fit within 950 pc. The clumps must fit without overlap.
+Each center must lie at or beyond the shell’s inner radius. Leave room for the
+whole clump inside the outer boundary and enough space between neighbors to avoid
+overlap.
 
 If you want to practice with a known geometry, run these three lines in Python
 from the PEACOCK source directory. They turn the bundled coordinates from cm into
@@ -170,13 +170,13 @@ bundled_cm = np.loadtxt("examples/cii/quickstart-clumps.txt")
 np.savetxt("my-clumps-pc.txt", bundled_cm / 3.085677581467192e18, fmt="%.17g")
 ```
 
-Save the following as `convert-clumps.py` beside `peacock.py`. It checks the
-coordinates before writing the headerless **cm** file PEACOCK reads. To find the
-expected count, multiply the spherical shell volume by the filling factor,
-divide by one clump's volume and round to the nearest whole clump. Here the
-result is 685.1, which rounds to 685. The script also checks each clump's
-nearest neighbor, allowing the one-part-per-million clearance used by PEACOCK's
-geometry generator.
+Save the following as `convert-clumps.py` beside `peacock.py`. The script checks
+that the number of rows matches the wind configuration. It divides the shell
+volume occupied by clumps by the volume of one clump and rounds to the nearest whole number.
+For the bundled C II configuration, that gives **685 clumps**. For your own
+wind, set the shell radii, clump radius and filling factor in the script to
+match your configuration. The script also checks the boundaries and spacing
+before writing the coordinates in cm.
 
 ```python
 import numpy as np
@@ -218,10 +218,7 @@ python3 peacock.py run --line CII1334 --backend cpu --config examples/cii/quicks
 python3 tools/plot_spectrum.py run/my-clumps --output run/my-clumps/spectrum.png
 ```
 
-With the practice file, the conversion reports 685 centers from **129.95 to
-899.90 pc**. All 100,000 packets escape and the binned spectrum matches the
-original constant-wind calculation. Open `run/my-clumps/spectrum.png` for the line
-profile or [read the spectrum in Python](outputs.md#read-a-spectrum-in-python)
+With the practice catalogue and tutorial settings, you should recover the
+original constant-wind spectrum. Open `run/my-clumps/spectrum.png` to see the
+line profile or [read the spectrum in Python](outputs.md#read-a-spectrum-in-python)
 from `run/my-clumps/spectrum.csv`.
-If you change the filling factor, shell size or clump radius, enter the new
-values in both the configuration and the conversion script.
