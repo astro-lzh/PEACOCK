@@ -25,7 +25,7 @@ print(f"Lowest flux: {deepest['flux']:.3f} at {deepest['velocity_km_s']:.0f} km/
 ```
 
 The strongest absorption in the CPU tutorial is on the blue side of the line.
-At −150 km/s the flux is 0.635 times the incident continuum. All 100,000 packets
+At −150 km/s the flux is 0.654 times the incident continuum. All 100,000 packets
 fall within the 60 plotted bins.
 
 | CSV column | Unit | Meaning |
@@ -41,9 +41,9 @@ You can use the three counts in `spectrum.json` to follow the selection. Start
 with all photons that escaped the wind (`escaped_packets`), keep those within
 the aperture (`aperture_packets`), then count those inside the plotted velocity
 range (`binned_packets`). This last count equals the sum of the CSV packet
-counts. In the [T15 accelerating wind example](configuring-a-peacock-simulation.md),
-one of the 100,000 escaped photons fell outside −600 to +600 km/s, leaving
-99,999 in the spectrum.
+counts. For example, the [250 pc aperture](choosing-a-line-and-an-observable.md#how-aperture-size-affects-the-c-ii-line-profile)
+selects 97,499 of the 100,000 escaped CPU photons. All of the selected photons
+fall inside the plotted velocity range of −600 to +600 km/s.
 
 ## Read individual photon packets
 
@@ -101,9 +101,9 @@ tutorial. The table gives the counts for a wind moving outward at 150 km/s.
 | Photon count or fraction | CPU | NVIDIA RTX 5090 |
 | --- | ---: | ---: |
 | All escaped photons | 100,000 | 100,000 |
-| Escaped without scattering | 95,632 | 95,690 |
-| Escaped after at least one scattering | 4,368 | 4,310 |
-| Fraction of escaped photons that scattered | 4.368% | 4.310% |
+| Escaped without scattering | 95,962 | 95,980 |
+| Escaped after at least one scattering | 4,038 | 4,020 |
+| Fraction of escaped photons that scattered | 4.038% | 4.020% |
 
 Both runs sampled the same wind. Individual photon paths vary with Monte Carlo
 sampling. A photon that scatters several times contributes once to the scattered count.
@@ -130,8 +130,8 @@ print(f"{in_aperture.sum():,} escapes in the aperture, including "
       f"{(in_aperture & scattered).sum():,} that scattered")
 ```
 
-Of the 100,000 escapes in each tutorial run, the 250 pc aperture selects 97,352
-CPU packets (1,720 scattered) and 97,398 GPU packets (1,708 scattered).
+Of the 100,000 escapes in each tutorial run, the 250 pc aperture selects 97,499
+CPU packets (1,537 scattered) and 97,498 GPU packets (1,518 scattered).
 Omitting this cut gives the full-aperture spectrum. Both
 selections average over all outgoing directions. A smaller aperture can remove
 extended scattered light while retaining the compact continuum source, as in the

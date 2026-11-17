@@ -117,8 +117,8 @@ and `spectrum.json` records how they were plotted.
 :alt: C II spectrum from the tutorial run, with velocity on the horizontal axis and flux relative to the injected continuum on the vertical axis.
 :width: 100%
 
-The absorption is deepest near −150 km/s in the reference CPU run, where the
-flux is about 64% of the incident continuum. The shaded band shows the approximate
+In the reference CPU run ($n_2/n_1=0.1$), the absorption is deepest near
+−150 km/s, where the flux is about 65% of the incident continuum. The shaded band shows the approximate
 uncertainty from sampling a finite number of photons.
 ```
 

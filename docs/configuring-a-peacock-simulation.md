@@ -52,7 +52,7 @@ gives the $\alpha=2$ case.
 
 ## Run both winds and compare the spectra
 
-Start in the extracted [PEACOCK 1.0.2 source directory](download.md) with the CPU build
+Start in the extracted [PEACOCK 1.0.3 source directory](download.md) with the CPU build
 from [Getting started](getting-started.md#cpu). Save `cii-t15.cfg` alongside
 `peacock.py`. In a Bash shell, run each configuration with the **same catalogue** and
 give it a fresh output directory:
@@ -80,9 +80,8 @@ python3 tools/plot_spectrum.py run/cii-t15 --output run/cii-t15/spectrum.png
 
 The accelerating wind produces a shallower absorption trough farther to the blue.
 With 20 km/s bins, the minimum shifts from −150 km/s in the constant wind to
-−170 km/s in the T15 wind, and its flux rises from 0.635 to 0.734 times the
-incident continuum. All 100,000 photons escaped in each CPU run. One T15 packet
-fell outside the plotted velocity window.
+−170 km/s in the T15 wind, and its flux rises from 0.654 to 0.725 times the
+incident continuum.
 ```
 
 To check the inputs of a completed run, open `resolved.cfg` in its output directory.
@@ -109,7 +108,7 @@ the positions in **cm**. Radii in the configuration are in **pc**.
 | `[emission] position_mode`, `position_param` | `3`, `0.001` | Draw the emission radius from an exponential distribution with a scale of 0.001 pc about the halo center. This gives a compact source. |
 | `[emission] p_cloud` | `0` | Fraction of packets launched inside clumps. Here all packets start outside the clumps. |
 | `[emission] frequency_mode`, `frequency_param` | `3`, `600` | Inject a flat continuum over velocity offsets from −600 to +600 km/s around the reference transition. The parameter specifies the half-width. |
-| `[emission] cii_ratio_21` | `0.3` | Dimensionless C II population ratio. The excited lower fine-structure level has 0.3 times the population of the ground level. |
+| `[emission] cii_ratio_21` | `0.1` | C II lower-level population ratio $n_2/n_1$. This example has one ion in the excited fine-structure level for every ten in the ground level. |
 
 ### The halo and the interior of each clump
 
