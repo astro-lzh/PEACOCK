@@ -217,3 +217,25 @@ The top row shows the first and last scattering radii for photons that scattered
 As the encounter rate falls more steeply, scattering shifts inward and more escaped
 photons undergo repeated scattering. These differences can be difficult to see in the
 integrated spectrum alone.
+
+To make these plots for your own C II run, include all escape frequencies and both
+resonant and fluorescent photons. The two right-hand panels use the
+[standard photon records](outputs.md#read-individual-photon-packets). The two
+left-hand panels need positions recorded during scattering.
+
+| Panel | How to calculate it |
+| --- | --- |
+| **Upper right · Last scattering radius** | Select escaped photons with `nscatter > 0`. CPU ASCII columns 1–3 give their last scattering position. For CUDA, use $\boldsymbol{r}_{\rm last}=\boldsymbol{r}_{\rm final}-d\,\hat{\boldsymbol n}$ to step back from the final position by the distance `dist` along the saved direction. Measure the radius from the halo center. |
+| **Lower right · Number of scatterings** | Among those same photons, compute the fraction with `nscatter >= N` for each threshold $N$. A photon that scatters many times contributes once at each threshold it reaches. |
+| **Upper left · First scattering radius** | Use the position where each escaped photon's scatter count first reaches one. For photons that scatter more than once, this earlier position requires a scattering history. |
+| **Lower left · All scattering radii** | Use the position of each scattering event, including repeated interactions of one photon. Bin the radii in 1 kpc intervals and divide each bin count by the total number of events. |
+
+For the probability densities in the top row, convert radii from cm to kpc and
+divide each bin count by the number of scattered escapes and the bin width in kpc.
+
+For the two left panels, record the events during transport. In a copy of the CPU
+configuration, add `track_output = cii-events.dat` under `[output]`. When you run
+with `--config`, this writes a new file in your working directory. Choose a fresh
+filename for each run. Within each photon's history, select the rows where
+`nscatter` increases by one. This skips
+the intervening grid and clump crossings.

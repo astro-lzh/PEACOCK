@@ -40,44 +40,54 @@ the chosen aperture. In the [T15 accelerating wind example](configuring-a-peacoc
 all 100,000 photons escaped, but one fell outside −600 to +600 km/s. The CSV counts
 therefore sum to 99,999.
 
-## Count escaped C II photons that scattered
+## Read individual photon packets
 
-How many photons interacted with the wind before they escaped? The binned spectrum
-combines direct and scattered light. For the dust-free C II tutorial, use the individual
-packet histories and count each escaped photon once if its `nscatter` is greater than
-zero. These counts include all directions and velocities before any aperture cut.
+The spectrum combines photons by velocity. To see which photons scattered or which
+rays enter a smaller aperture, start with the packet file named in `spectrum.json`.
+The CPU tutorial writes one row per escaped photon. The CUDA archive stores every
+launched photon, with `status == 1` marking an escape.
 
-**CPU.** Each row in the tutorial's ASCII packet file is an escaped photon. Its header
-identifies `nscatter` as column 13, which is index 12 in Python.
+| Quantity | CPU ASCII (columns start at 1) | GPU packet archive | Unit |
+| --- | --- | --- | --- |
+| Number of scatterings before escape | `nscatter` (13) | `nscatter` for `status == 1` | count |
+| Position on the escaping ray | `pos` (1–3), at the last scattering or at emission for a direct photon | `pos0`, `pos1`, `pos2`, at the end of the ray | cm |
+| Outgoing direction | `dir` (4–6) | `dir0`, `dir1`, `dir2` | dimensionless |
+| Distance traveled since the last scattering (or emission for a direct photon) | `dist` (12) | `dist` | cm |
+| Frequency offset | `x` (7), observer frame | `x`, local frame, with `sc_dir_bulk` giving the projected bulk-motion correction | Doppler widths (dimensionless) |
+| Doppler width | `Delta_nu_D` (9) | `Delta_nu_D` | Hz |
 
-```python
-import json
-from pathlib import Path
+### Count escaped C II photons that scattered
 
-import numpy as np
-
-run = Path("run/cii")
-settings = json.loads((run / "spectrum.json").read_text(encoding="utf-8"))
-nscatter = np.loadtxt(run / settings["packet_file"], usecols=12, dtype=int, ndmin=1)
-print(f"{np.count_nonzero(nscatter > 0):,} scattered out of {nscatter.size:,} escaped")
-```
-
-**CUDA.** The packet archive contains every launched photon. Select the photons with
-`status == 1` (escaped), then count those that scattered. The plotting step checks
-that the run completed before writing `spectrum.json`, which names the packet file.
+After plotting the [C II tutorial](getting-started.md), run the following Python code
+from the PEACOCK source folder. Set `run` to the directory you produced. The bundled
+GPU reader selects escaped rays and converts their frequencies using the run's atomic
+table. Use the same escape selection for the scattering counts so all arrays describe
+the same photons in the same order.
 
 ```python
 import json
 from pathlib import Path
 
 import numpy as np
+from tools.plot_spectrum import cuda_packets, load_atom, selected_profile
 
-run = Path("run/cii-cuda")
+run = Path("run/cii")  # Use run/cii-cuda for a GPU calculation.
 settings = json.loads((run / "spectrum.json").read_text(encoding="utf-8"))
-with np.load(run / settings["packet_file"], allow_pickle=False) as packets:
-    escaped = packets["status"] == 1
-    nscatter = packets["nscatter"][escaped]
-print(f"{np.count_nonzero(nscatter > 0):,} scattered out of {nscatter.size:,} escaped")
+nu0 = settings["reference_frequency_hz"]
+if settings["backend"] == "cpu":
+    packets = np.loadtxt(run / settings["packet_file"], ndmin=2)
+    position_cm, direction = packets[:, :3], packets[:, 3:6]
+    frequency_hz = nu0 + packets[:, 6] * packets[:, 8]
+    nscatter = packets[:, 12].astype(int)
+else:
+    atom = load_atom(selected_profile(run, settings), run / "atomic.atom")
+    frequency_hz, position_cm, direction, path, _ = cuda_packets(run, atom)
+    with np.load(path, allow_pickle=False) as packets:
+        escaped = packets["status"] == 1
+        nscatter = packets["nscatter"][escaped]
+
+scattered = nscatter > 0
+print(f"{scattered.sum():,} scattered out of {nscatter.size:,} escaped")
 ```
 
 The table compares the two 100,000-photon C II runs with the radial outflow set to 150 km/s.
@@ -91,6 +101,64 @@ The table compares the two 100,000-photon C II runs with the radial outflow set 
 
 Both runs sampled the same wind. Individual photon paths vary with Monte Carlo
 sampling. A photon that scatters several times contributes once to the scattered count.
+The [four-panel C II example](examples.md#photon-scattering-statistics) shows how to
+use the same records to find the distribution of last scattering radii.
+
+### Observing aperture
+
+A circular aperture selects escaping rays by their **projected distance** from the
+halo center. A photon can scatter far from the center in three dimensions and still
+travel along a ray that passes close to the center on the sky. For a point
+$\boldsymbol r$ on that ray and its unit direction $\hat{\boldsymbol n}$, the
+projected distance is $b=|\boldsymbol r\times\hat{\boldsymbol n}|$. It is the same
+at the last scattering and at the halo boundary. Continue with the arrays above to
+count the rays that enter a projected aperture of radius 250 pc.
+
+```python
+from tools.plot_spectrum import PC_CM
+
+unit_direction = direction / np.linalg.norm(direction, axis=1)[:, None]
+impact_pc = np.linalg.norm(np.cross(position_cm, unit_direction), axis=1) / PC_CM
+in_aperture = impact_pc <= 250
+print(f"{in_aperture.sum():,} escapes in the aperture, including "
+      f"{(in_aperture & scattered).sum():,} that scattered")
+```
+
+Of the 100,000 escapes in each tutorial run, the 250 pc aperture selects 97,352
+CPU packets (1,720 scattered) and 97,398 GPU packets (1,708 scattered).
+Omitting this cut gives the full-aperture spectrum. Both
+selections average over all outgoing directions. A smaller aperture can remove
+extended scattered light while retaining the compact continuum source, as in the
+{ref}`C II aperture comparison <cii-aperture-comparison>`. For a model-to-data
+comparison, match the observational aperture as in the {ref}`C II fitting walkthrough
+<dnn-tutorial>`.
+
+### Frequency and velocity
+
+The CPU ASCII column `x` gives the observer-frame frequency offset in units of the
+packet's Doppler width. Its frequency in Hz is $\nu_{\rm obs}=\nu_0+x\,\Delta\nu_D$.
+For the tutorial's CUDA C II archive, the reader adds `sc_dir_bulk` to the local `x`
+before multiplying by `Delta_nu_D` and adding $\nu_0$. For other GPU lines it uses
+`nu_final_Hz` when available or applies the frame conversion for that atomic network.
+
+To compare these photons with the plotted spectrum, use the same reference transition
+and the same redward-positive convention, $v=-c(\nu_{\rm obs}-\nu_0)/\nu_0$.
+For C II, zero velocity corresponds to 1334.53 Å. Photons from the coupled
+fine-structure transitions are plotted relative to that same wavelength. The array
+below gives one velocity per escaped photon, in km/s. The CSV reports the centers
+of the velocity bins.
+
+```python
+from tools.plot_spectrum import C_KMS
+
+velocity_km_s = -C_KMS * (frequency_hz - nu0) / nu0
+counts, edges = np.histogram(velocity_km_s[in_aperture], bins=settings["bins"],
+                             range=settings["velocity_range_km_s"])
+```
+
+`counts` now contains the packet counts per velocity bin for that aperture. To make
+the same selection with the command-line plotter, add `--aperture-pc 250` and use the
+same bin edges and normalization on either backend.
 
 ## Plot a completed run
 
@@ -132,22 +200,6 @@ If all photons are physically absorbed, a continuum-normalized spectrum has zero
 A probability-normalized shape requires at least one escaped packet inside the selected
 aperture and velocity range.
 
-## Frequency and velocity
-
-Every line selection has a reference transition. For the C II example the zero point is
-C II 1334.53 Å, and all coupled branches use this same velocity axis. Their wavelength
-separation therefore appears as an offset in the plotted spectrum.
-
-The plotted velocity is redward-positive: a photon at a longer wavelength than the
-reference has positive velocity, and a bluer photon has negative velocity. The tool uses
-$v=-c(\nu_{\mathrm{obs}}-\nu_0)/\nu_0$ for both CPU and CUDA outputs, where $\nu_0$ is the
-selected reference frequency. Raw dimensionless detuning is measured in Doppler widths,
-so it must first be converted using the packet's Doppler width and observer-frame
-frequency.
-
-Use the same reference transition and velocity convention when comparing the result with
-observations or another run.
-
 ## Continuum normalization and bin width
 
 The quick-start C II model injects equal-weight photons uniformly from −600 to
@@ -186,21 +238,3 @@ not measure the escape fraction. Preserve the input line-to-continuum ratio and 
 source normalization when combining separately simulated emission components.
 For a line source the default plotting window is −600 to +600 km s⁻¹; use
 `--velocity-range` to include wider scattered wings when needed.
-
-## Observing aperture
-
-An aperture selects escaping rays by projected distance from the halo center. For a ray
-with position $\boldsymbol r$ and unit direction $\hat{\boldsymbol n}$, its impact
-parameter is $b=|\boldsymbol r\times\hat{\boldsymbol n}|$.
-
-The standard plot combines escaping photons across directions to represent the unresolved,
-all-sky spectrum. Without `--aperture-pc`, it includes all escaping packets. Supply an
-aperture radius in parsecs to select a smaller projected region. Use the same physical
-aperture when comparing models with an observed spectrum. A smaller aperture can remove
-extended scattered emission while retaining the compact continuum source.
-The {ref}`C II aperture comparison <cii-aperture-comparison>`
-shows this effect using two spectra extracted from the same run.
-
-The {ref}`C II fitting walkthrough <dnn-tutorial>` shows a separate example with an
-explicit observational aperture and pixel grid. Its normalization and observation mapping
-are part of that particular fit.
