@@ -143,3 +143,77 @@ escaped photon packets. The `--line CII1334` argument selects the transitions.
 CUDA stores packets in `gpu_output_*.npz`. On either backend, keep `resolved.cfg`
 to see the configuration passed to transport and `atomic.atom` to identify the
 atomic network.
+
+## Use your own clump coordinates
+
+Start with `my-clumps-pc.txt`, a plain text file with one clump center per row and
+three space-separated columns, `x y z`, in parsecs relative to the halo center.
+For the C II configuration above, supply **685 clumps of radius 50 pc**. Each
+center must lie at least 100 pc from the origin, and the outer surface of every
+clump must fit within 950 pc. The clumps must fit without overlap.
+
+If you want to practice with a known geometry, run these three lines in Python
+from the PEACOCK source directory. They turn the bundled coordinates from cm into
+a sample input in pc. Skip this step when using your own file.
+
+```python
+import numpy as np
+bundled_cm = np.loadtxt("examples/cii/quickstart-clumps.txt")
+np.savetxt("my-clumps-pc.txt", bundled_cm / 3.085677581467192e18, fmt="%.17g")
+```
+
+Save the following as `convert-clumps.py` beside `peacock.py`. It checks the
+coordinates before writing the headerless **cm** file PEACOCK reads. To find the
+expected count, multiply the spherical shell volume by the filling factor,
+divide by one clump's volume and round to the nearest whole clump. Here the
+result is 685.1, which rounds to 685. The script also checks each clump's
+nearest neighbor, allowing the one-part-per-million clearance used by PEACOCK's
+geometry generator.
+
+```python
+import numpy as np
+from scipy.spatial import cKDTree
+
+pc_in_cm = 3.085677581467192e18
+inner_pc, outer_pc, clump_radius_pc = 100.0, 950.0, 50.0
+filling_factor = 0.1
+clearance = 1.000001
+shell_to_clump_volume = (outer_pc**3 - inner_pc**3) / clump_radius_pc**3
+expected_count = int(np.floor(filling_factor * shell_to_clump_volume + 0.5))
+
+xyz = np.loadtxt("my-clumps-pc.txt", ndmin=2)
+if xyz.shape[1] != 3 or not np.isfinite(xyz).all():
+    raise ValueError("Each row must contain three finite coordinates in pc.")
+if len(xyz) != expected_count:
+    raise ValueError(f"Expected {expected_count} clumps, found {len(xyz)}.")
+
+radius = np.linalg.norm(xyz, axis=1)
+if radius.min() < inner_pc:
+    raise ValueError("A clump center is inside the inner boundary.")
+if radius.max() + clump_radius_pc * clearance > outer_pc:
+    raise ValueError("A clump extends past the outer boundary or its clearance.")
+distances, _ = cKDTree(xyz).query(xyz, k=2)  # first match is the clump itself
+if distances[:, 1].min() <= 2 * clump_radius_pc * clearance:
+    raise ValueError("Two clumps overlap or touch within the placement clearance.")
+
+np.savetxt("my-clumps-cm.txt", xyz * pc_in_cm, fmt="%.17g")
+print(f"Wrote {len(xyz)} clumps with center radii {radius.min():.2f} to {radius.max():.2f} pc.")
+```
+
+Run the conversion, then pass the resulting file to the C II model and plot the
+spectrum. These commands use the constant 150 km/s wind and the 25 km/s random
+dispersion from `quickstart.cfg`.
+
+```bash
+python3 convert-clumps.py
+python3 peacock.py run --line CII1334 --backend cpu --config examples/cii/quickstart.cfg --clump-file my-clumps-cm.txt --output run/my-clumps
+python3 tools/plot_spectrum.py run/my-clumps --output run/my-clumps/spectrum.png
+```
+
+With the practice file, the conversion reports 685 centers from **129.95 to
+899.90 pc**. All 100,000 packets escape and the binned spectrum matches the
+original constant-wind calculation. Open `run/my-clumps/spectrum.png` for the line
+profile or [read the spectrum in Python](outputs.md#read-a-spectrum-in-python)
+from `run/my-clumps/spectrum.csv`.
+If you change the filling factor, shell size or clump radius, enter the new
+values in both the configuration and the conversion script.

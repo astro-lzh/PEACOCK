@@ -1,30 +1,109 @@
 # Spectra and output files
 
-A PEACOCK run follows photon packets through the gas and records their outcomes. To make
-a spectrum, select the packets that escaped, apply an observing aperture if needed, and
-count their frequencies in bins. The plotting tool performs these steps for both CPU and
-CUDA runs.
+## Read a spectrum in Python
+
+The [C II tutorial](getting-started.md) saves a spectrum with one row per velocity bin in
+`spectrum.csv`. Open `spectrum.json` alongside it to see the reference transition,
+normalization and aperture. Run this Python example from the PEACOCK source folder.
+
+```python
+import json
+from pathlib import Path
+
+import numpy as np
+
+run = Path("run/cii")  # Use run/cii-cuda for the GPU tutorial.
+spectrum = np.genfromtxt(run / "spectrum.csv", delimiter=",", names=True, ndmin=1)
+settings = json.loads((run / "spectrum.json").read_text(encoding="utf-8"))
+
+print(settings["line_label"], settings["normalization"])
+print(f"{len(spectrum)} bins, {int(spectrum['escaped_packets'].sum()):,} packets in range")
+deepest = spectrum[np.argmin(spectrum["flux"])]
+print(f"Lowest flux: {deepest['flux']:.3f} at {deepest['velocity_km_s']:.0f} km/s")
+```
+
+For the 100,000-photon CPU tutorial, the 60 bins contain 100,000 packets. The minimum
+continuum-normalized flux is 0.635 in the bin centered at −150 km/s.
+
+| CSV column | Unit | Meaning |
+| --- | --- | --- |
+| `velocity_km_s` | km/s | Bin center relative to the reference transition. Positive velocities are redward. |
+| `flux` | Dimensionless for `continuum`, (km/s)⁻¹ for `probability` | Flux relative to the injected continuum, or probability density per unit velocity. A probability-normalized profile has unit area across the plotted bins. |
+| `mc_sigma` | Same as `flux` | Approximate Monte Carlo uncertainty for that bin, using the square root of its packet count and the same normalization as the flux. |
+| `escaped_packets` | packets | Escaped packets in this bin that pass the aperture cut. |
+| `bin_left_km_s` | km/s | Lower velocity edge of the bin. |
+| `bin_right_km_s` | km/s | Upper velocity edge of the bin. |
+
+Summing the CSV packet counts gives `binned_packets` in the JSON file. The JSON also
+records `escaped_packets` across the whole simulation and `aperture_packets` inside
+the chosen aperture. In the [T15 accelerating wind example](configuring-a-peacock-simulation.md),
+all 100,000 photons escaped, but one fell outside −600 to +600 km/s. The CSV counts
+therefore sum to 99,999.
+
+## Count escaped C II photons that scattered
+
+How many photons interacted with the wind before they escaped? The binned spectrum
+combines direct and scattered light. For the dust-free C II tutorial, use the individual
+packet histories and count each escaped photon once if its `nscatter` is greater than
+zero. These counts include all directions and velocities before any aperture cut.
+
+**CPU.** Each row in the tutorial's ASCII packet file is an escaped photon. Its header
+identifies `nscatter` as column 13, which is index 12 in Python.
+
+```python
+import json
+from pathlib import Path
+
+import numpy as np
+
+run = Path("run/cii")
+settings = json.loads((run / "spectrum.json").read_text(encoding="utf-8"))
+nscatter = np.loadtxt(run / settings["packet_file"], usecols=12, dtype=int, ndmin=1)
+print(f"{np.count_nonzero(nscatter > 0):,} scattered out of {nscatter.size:,} escaped")
+```
+
+**CUDA.** The packet archive contains every launched photon. Select the photons with
+`status == 1` (escaped), then count those that scattered. The plotting step checks
+that the run completed before writing `spectrum.json`, which names the packet file.
+
+```python
+import json
+from pathlib import Path
+
+import numpy as np
+
+run = Path("run/cii-cuda")
+settings = json.loads((run / "spectrum.json").read_text(encoding="utf-8"))
+with np.load(run / settings["packet_file"], allow_pickle=False) as packets:
+    escaped = packets["status"] == 1
+    nscatter = packets["nscatter"][escaped]
+print(f"{np.count_nonzero(nscatter > 0):,} scattered out of {nscatter.size:,} escaped")
+```
+
+The table compares the two 100,000-photon C II runs with the radial outflow set to 150 km/s.
+
+| Photon count or fraction | CPU | NVIDIA RTX 5090 |
+| --- | ---: | ---: |
+| All escaped photons | 100,000 | 100,000 |
+| Escaped without scattering | 95,632 | 95,690 |
+| Escaped after at least one scattering | 4,368 | 4,310 |
+| Fraction of escaped photons that scattered | 4.368% | 4.310% |
+
+Both runs sampled the same wind. Individual photon paths vary with Monte Carlo
+sampling. A photon that scatters several times contributes once to the scattered count.
 
 ## Plot a completed run
 
-From the source folder, run:
+To generate the figure, CSV and JSON for a run, give the plotting tool the run directory
+and an output filename.
 
 ```bash
 python3 tools/plot_spectrum.py run/cii --output run/cii/spectrum.png
 ```
 
-Replace `run/cii` with the directory created by your simulation. The tool reads the run's
-line and atomic data, writes the figure to `spectrum.png`, and saves the binned spectrum
-beside it as `spectrum.csv`. A third file, `spectrum.json`, records the line, binning,
-aperture and normalization used to make the plot.
-
-CPU plotting uses the ASCII escape-packet output selected by the quick-start
-configuration. CUDA plotting reads the packet archive named by the run summary.
-The CSV columns give velocity, flux, approximate Monte Carlo uncertainty, escaping
-packet count, and the left and right velocity-bin edges.
-
-The [C II tutorial](getting-started.md) supplies a complete example using the same
-configuration on the CPU and GPU.
+The figure, table and settings share the same filename stem. For example, choosing
+`spectrum-aperture.png` produces `spectrum-aperture.csv` and `spectrum-aperture.json`
+alongside the figure.
 
 ## Which files should I keep?
 
@@ -45,14 +124,9 @@ packets into a spectrum.
 
 ## Escaping and absorbed photons
 
-The CPU example's ASCII spectrum file contains escaped packets. CUDA output contains all
-launched packets; use `status == 1` for those that escaped. Physically absorbed photons
-and incomplete or numerically failed histories do not contribute to the escaping
-spectrum. The CUDA summary reports these outcomes separately.
-
-The plotting tool selects escaped packets automatically. Check the run summary before
-interpreting a spectrum: unfinished histories require attention because they are not
-physical absorption.
+The plotting tool selects escaped packets automatically. The CUDA run summary reports
+escapes, physical absorption and unfinished histories separately. Resolve any unfinished
+histories before interpreting the spectrum.
 
 If all photons are physically absorbed, a continuum-normalized spectrum has zero flux.
 A probability-normalized shape requires at least one escaped packet inside the selected
