@@ -68,8 +68,8 @@ supply the compiler.
 
 If Windows reports “An Application Control policy has blocked this file” when starting
 `g++.exe`, it is preventing the host C++ compiler from running. Use a policy-approved
-GCC-compatible C++ toolchain, or ask your system administrator to approve the compiler and
-its supporting programs.
+GCC-compatible C++ toolchain. On a managed machine, ask your administrator which toolchain
+the device policy allows.
 
 The [Windows GPU build command](getting-started.md#nvidia-gpu) selects the UCRT64
 Clang compiler explicitly with `--cxx`. Set its path to the Clang installation
@@ -80,8 +80,12 @@ explains how an administrator can identify the blocked file in the CodeIntegrity
 
 If the build finishes but a run stops with error 4551 before input preparation, check
 whether the event names `peacock-export.exe`. PEACOCK built this program to prepare the
-cloud grid and photon packets. Give your administrator the exact executable path and the
-`executable_sha256` recorded in that build’s `build.json` so they can review it for approval.
+cloud grid and photon packets. On an organization-managed device, give your administrator
+the executable path and `executable_sha256` from `build.json` to identify the affected build.
+
+Windows 11 Smart App Control has no per-app exception. If it blocks a locally built
+exporter, Microsoft recommends a build signed with a trusted code-signing certificate.
+See the [Microsoft Smart App Control FAQ](https://support.microsoft.com/en-us/windows/security/threat-malware-protection/smart-app-control-frequently-asked-questions).
 
 ## Windows reports a missing DLL
 
