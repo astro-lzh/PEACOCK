@@ -63,7 +63,8 @@ NVIDIA driver to a version compatible with the CUDA compiler used. The version s
 `nvidia-smi` describes driver support, while the Python CUDA packages or system Toolkit
 supply the compiler.
 
-## Windows blocks a compiler with Application Control error 4551
+(windows-blocks-a-compiler-with-application-control-error-4551)=
+## Windows reports Application Control error 4551
 
 If Windows reports “An Application Control policy has blocked this file” when starting
 `g++.exe`, it is preventing the host C++ compiler from running. Use a policy-approved
@@ -76,6 +77,11 @@ approved on your machine. The host compiler must be
 able to run before the CUDA build can finish. Microsoft's
 [App Control troubleshooting guide](https://learn.microsoft.com/windows/security/application-security/application-control/app-control-for-business/operations/appcontrol-debugging-and-troubleshooting)
 explains how an administrator can identify the blocked file in the CodeIntegrity event log.
+
+If the build finishes but a run stops with error 4551 before input preparation, check
+whether the event names `peacock-export.exe`. PEACOCK built this program to prepare the
+cloud grid and photon packets. Give your administrator the exact executable path and the
+`executable_sha256` recorded in that build’s `build.json` so they can review it for approval.
 
 ## Windows reports a missing DLL
 
