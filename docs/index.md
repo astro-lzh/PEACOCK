@@ -27,9 +27,10 @@ Photon transport in a clumpy wind
 ```
 
 (model-bulk-outflow-and-random-gas-motions)=
-### Connect gas motions to the absorption profile
+(connect-gas-motions-to-the-absorption-profile)=
+### How gas motions shape line profiles
 
-Clumps moving toward the observer on the near side of a galaxy can absorb its light at blueshifted wavelengths. Random velocities give individual clumps different Doppler shifts, while thermal and turbulent motions broaden each clump’s own absorption profile.
+In an outflow, approaching clumps can absorb the galaxy’s light at blueshifted wavelengths, while receding clumps can contribute redshifted emission. Each clump’s random velocity adds a Doppler shift of its own. Within a clump, thermal and turbulent motions broaden the local line profile.
 
 (model-absorption-and-re-emission-together)=
 ### Trace resonant scattering and fluorescence
