@@ -1,6 +1,6 @@
 # PEACOCK
 
-PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics) models the ultraviolet emission and absorption lines produced by galactic winds. It uses three-dimensional Monte Carlo radiative transfer to follow photons through gas clumps and dust. You can change where the clumps lie and how they move, then see how the absorption troughs and emission peaks respond.
+PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex Kinematics) models the ultraviolet emission and absorption lines produced by galactic winds. It uses three-dimensional Monte Carlo radiative transfer to follow photons through gas clumps and dust. The distribution and motion of the clumps shape the spectrum that emerges from the wind.
 
 (overview-start)=
 (use-peacock)=
