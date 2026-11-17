@@ -7,7 +7,7 @@ galactic winds.
 [Read the documentation](https://peacock-rt.readthedocs.io/en/latest/).
 
 This repository contains the Sphinx documentation and the
-[transport source archive](docs/assets/PEACOCK-1.0.1.zip).
+[transport source archive](docs/assets/PEACOCK-1.0.2.zip).
 See [Citing PEACOCK](docs/citing.md) for the code and paper references.
 
 The editable documentation lives in `docs/`. It uses Sphinx, MyST Markdown
@@ -34,9 +34,9 @@ After building, open `site/index.html` to browse the documentation locally.
 
 ## Version and citation
 
-The current source package is **1.0.1**, which includes shared CPU/GPU C II
-tutorial inputs and a spectrum plotting helper. Its transport physics and
-atomic data are unchanged from 1.0. Use [CITATION.cff](CITATION.cff) for the
+PEACOCK **1.0.2** includes a shared C II example for CPU and GPU. It follows
+100,000 photons through 685 clumps moving outward at 150 km/s. The bundled
+plotting tool produces a continuum-normalized spectrum. Use [CITATION.cff](CITATION.cff) for the
 current version's metadata.
 
 The original **1.0** software release is independently archived:

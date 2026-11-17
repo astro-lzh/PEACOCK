@@ -80,6 +80,12 @@ pacman -Su
 pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-binutils mingw-w64-ucrt-x86_64-gsl
 ```
 
+For the Windows GPU tutorial, install Clang in the same UCRT64 environment. PEACOCK uses it to build the program that prepares photon packets for the GPU.
+
+```bash
+pacman -S --needed mingw-w64-ucrt-x86_64-clang
+```
+
 These are the [UCRT64 compiler and libraries](https://www.msys2.org/docs/environments/).
 Keep them in the same environment.
 
@@ -99,8 +105,8 @@ later examples, replace `python3` with `.\.venv\Scripts\python.exe`. When buildi
 Windows, also pass `--compiler-prefix C:/msys64/ucrt64`, or the location where you installed
 UCRT64.
 
-Continue with the Windows commands in the [first simulation](getting-started.md) or
-[GPU guide](gpu.md) to build PEACOCK.
+For a CPU run, continue with the [first simulation](getting-started.md#cpu). For a GPU
+run, install the CUDA components below.
 
 (install-cuda)=
 ## Add GPU support on Linux or Windows
@@ -139,9 +145,8 @@ for Blackwell targets, including the RTX 5090's `compute_120` target; an older c
 cannot build that target. See the [CUDA 12.8 features](https://docs.nvidia.com/cuda/archive/12.8.2/cuda-features-archive/index.html).
 The driver must support your particular card and the selected CUDA components.
 
-Next, [choose your GPU target and build PEACOCK](gpu.md#choose-your-gpu-target). If you
-already use a complete system CUDA Toolkit, the GPU guide also explains how to point
-PEACOCK to that installation.
+Continue with the [first GPU simulation](getting-started.md#nvidia-gpu). For an existing
+system CUDA Toolkit, see the [Toolkit instructions](gpu.md#use-an-existing-cuda-toolkit).
 
 (optional-cpu-features)=
 ## Optional CPU features

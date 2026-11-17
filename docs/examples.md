@@ -16,7 +16,7 @@ random cloud motion and radial outflow. Clump centers lie beyond
 :alt: Continuum-normalized C II spectrum from the shared quick-start model, plotted against redward-positive velocity relative to C II 1334.53 angstroms.
 :width: 100%
 
-The shared C II example with 4,096 launched photons. The incident continuum is normalized to one. Sampling noise is visible at this small packet count.
+The C II tutorial uses 100,000 continuum photons and a 150 km s⁻¹ radial outflow. Flux is measured relative to the incident continuum, shown at one.
 ```
 
 Use the [example model settings](#configurations) below to inspect the physical inputs.
@@ -159,7 +159,7 @@ The lower panel shows direct radiative transfer minus the DNN prediction, in uni
 Follow a real ultraviolet spectrum from escaping photon packets to a binned spectrum, a
 neural-network prediction and two independent radiative transfer checks.
 
-Start with the [small synthetic run](getting-started.md) if this is your first PEACOCK
+Start with the [synthetic C II tutorial](getting-started.md) if this is your first PEACOCK
 calculation. The walkthrough here adds the aperture, observed pixel grid and surrogate
 used for a particular galaxy fit.
 
@@ -337,13 +337,14 @@ These are the settings used by the shared quick-start configuration.
 
 | Setting | Value |
 | --- | --- |
+| Continuum photons | 100,000 |
 | Source spectrum | Flat continuum, $\pm600\,\mathrm{km}\,\mathrm{s}^{-1}$ |
 | Clump placement | Centers beyond $100\,\mathrm{pc}$; complete clumps inside $950\,\mathrm{pc}$ |
 | Clump radius | $50\,\mathrm{pc}$ |
 | Filling factor | $10\%$ |
 | Ion column across one clump radius | $3\times10^{15}\,\mathrm{cm}^{-2}$ |
 | Clump temperature | $10^{4}\,\mathrm{K}$ |
-| Clump motion | $25\,\mathrm{km}\,\mathrm{s}^{-1}$ dispersion per axis and $80\,\mathrm{km}\,\mathrm{s}^{-1}$ radial outflow |
+| Clump motion | $25\,\mathrm{km}\,\mathrm{s}^{-1}$ dispersion per axis and $150\,\mathrm{km}\,\mathrm{s}^{-1}$ radial outflow |
 | Level population ratio | $n_2/n_1=0.3$ |
 
 The same complete catalogue supplies the clump positions to CPU and GPU runs.

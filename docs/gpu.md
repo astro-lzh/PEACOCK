@@ -1,8 +1,9 @@
-# GPU transport
+(gpu-transport)=
+# GPU setup and advanced workflows
 
-One CUDA build runs all 14 packaged line profiles. Select a line with `--line` at run
-time. The [C II walkthrough](getting-started.md) uses the same physical configuration on
-CPU and GPU.
+For your first C II spectrum, follow the Linux or Windows commands in
+[Getting started](getting-started.md#nvidia-gpu). Use this page to look up your
+GPU target, configure an existing CUDA Toolkit, or run on a cluster.
 
 (gpu-requirements)=
 ## Install the GPU requirements
@@ -35,43 +36,11 @@ requires CUDA 12.8 or later. Explicitly pass your target when building; the comm
 default is `compute_120`.
 
 (gpu-run)=
-## Build once and run the C II example
-
-The commands below use an RTX 5090 target. Replace `compute_120` with the target selected
-above. Run them from the source directory with the Python environment active.
-
-### Linux
-
-```bash
-python3 peacock.py build --backend cuda --arch compute_120 --output build/cuda
-python3 peacock.py run --line CII1334 --backend cuda --build-dir build/cuda --config examples/cii/quickstart.cfg --clump-file examples/cii/quickstart-clumps.txt --nphot 4096 --output run/cii-cuda
-python3 tools/plot_spectrum.py run/cii-cuda --output run/cii-cuda/spectrum.png
-```
-
-### Windows PowerShell
-
-Use the Windows Python environment and UCRT64 tools from the
-[Windows installation instructions](installation.md#windows):
-
-```powershell
-.\.venv\Scripts\python.exe peacock.py build --backend cuda --arch compute_120 --compiler-prefix C:/msys64/ucrt64 --output build/cuda
-.\.venv\Scripts\python.exe peacock.py run --line CII1334 --backend cuda --build-dir build/cuda --config examples/cii/quickstart.cfg --clump-file examples/cii/quickstart-clumps.txt --nphot 4096 --output run/cii-cuda
-.\.venv\Scripts\python.exe tools/plot_spectrum.py run/cii-cuda --output run/cii-cuda/spectrum.png
-```
-
-Use a new build directory the first time, and a new or empty output directory for each
-simulation. Reuse the build when changing the spectral line, model parameters, or photon
-count. Choose a new build directory when changing the compiler, CUDA target, or PEACOCK
-source version, then pass the new directory with `--build-dir`.
-
-The plotter selects escaped packets and uses the same velocity and continuum normalization
-for CPU and CUDA output. See [Reading the outputs](outputs.md). Monte Carlo packet histories
-can differ between the two implementations; a small-photon example is useful for learning
-the workflow, while scientific comparisons need enough photons to assess sampling noise.
-
+(build-once-and-run-the-c-ii-example)=
 ## Run a different line
 
-The same build runs these examples without recompilation:
+After the [first GPU run](getting-started.md#nvidia-gpu), the compiled CUDA module runs
+all 14 packaged line profiles. Use `--line` to select the atomic data. For example,
 
 ```bash
 python3 peacock.py run --line CIV1548 --backend cuda --build-dir build/cuda --output run/civ
@@ -92,7 +61,8 @@ python3 peacock.py build --backend cuda --arch compute_120 --nvrtc-library /usr/
 For a Windows CUDA 12.8 Toolkit installed in NVIDIA's usual directory:
 
 ```powershell
-.\.venv\Scripts\python.exe peacock.py build --backend cuda --arch compute_120 --compiler-prefix C:/msys64/ucrt64 --nvrtc-library "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/bin/nvrtc64_120_0.dll" --cuda-include "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include" --cuda-include "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include/cccl" --output build/cuda-toolkit
+$ucrt = "C:/msys64/ucrt64"
+.\.venv\Scripts\python.exe peacock.py build --backend cuda --arch compute_120 --compiler-prefix "$ucrt" --cxx "$ucrt/bin/clang++.exe" --nvrtc-library "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/bin/nvrtc64_120_0.dll" --cuda-include "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include" --cuda-include "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include/cccl" --output build/cuda-toolkit
 ```
 
 Use your installed Toolkit's paths and target. Additional `--cuda-include` arguments can

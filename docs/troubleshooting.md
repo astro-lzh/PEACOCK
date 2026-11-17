@@ -47,7 +47,7 @@ the four components PEACOCK looks for. A lone CUDA runtime package is not enough
 compile transport.
 
 For a complete system Toolkit, use the explicit `--nvrtc-library` and `--cuda-include`
-arguments shown in [GPU transport](gpu.md#use-an-existing-cuda-toolkit). If packages were
+arguments shown in [GPU setup](gpu.md#use-an-existing-cuda-toolkit). If packages were
 installed into a different Python environment, activate the correct one or pass
 `--nvidia-root` pointing to the directory containing `cuda_nvrtc`, `cuda_runtime`, `curand`,
 and `cuda_cccl`.
@@ -70,8 +70,9 @@ If Windows reports “An Application Control policy has blocked this file” whe
 GCC-compatible C++ toolchain, or ask your system administrator to approve the compiler and
 its supporting programs.
 
-For an approved UCRT64 installation, point `--compiler-prefix` to its directory. The
-`--cxx` option can select an approved C++ compiler explicitly. The host compiler must be
+The [Windows GPU build command](getting-started.md#nvidia-gpu) selects the UCRT64
+Clang compiler explicitly with `--cxx`. Set its path to the Clang installation
+approved on your machine. The host compiler must be
 able to run before the CUDA build can finish. Microsoft's
 [App Control troubleshooting guide](https://learn.microsoft.com/windows/security/application-security/application-control/app-control-for-business/operations/appcontrol-debugging-and-troubleshooting)
 explains how an administrator can identify the blocked file in the CodeIntegrity event log.
@@ -113,9 +114,8 @@ command-line selector.
 
 ## The plotted spectrum is noisy or empty
 
-The small packet count in the first example is intended for a quick run through the
-workflow. Increase `--nphot` for a smoother Monte Carlo spectrum while keeping the physical
-parameters fixed. Check that the velocity range contains the line and that the observing
+Sampling noise grows when a bin contains few escaping photons. Increase `--nphot` for
+a smoother Monte Carlo spectrum while keeping the physical parameters fixed. Check that the velocity range contains the line and that the observing
 aperture includes the escaping photons. [Reading the outputs](outputs.md) explains the
 escape selection and normalization.
 

@@ -3,18 +3,21 @@
 Get the PEACOCK transport engine and bundled examples.
 
 (source-download)=
-## PEACOCK 1.0.1
+## PEACOCK 1.0.2
 
-{download}`Download PEACOCK 1.0.1 source (ZIP) <assets/PEACOCK-1.0.1.zip>`
+{download}`Download PEACOCK 1.0.2 source (ZIP) <assets/PEACOCK-1.0.2.zip>`
 
-This version includes the shared CPU/GPU C II example and the spectrum-plotting tool
-used in the tutorial. Its transport physics and atomic data are unchanged from 1.0.
+The tutorial uses this archive. Its C II example follows 100,000 photons through
+clumps moving outward at 150 km/s. It includes the configuration, a catalogue of 685
+clumps, and a tool for plotting the resulting spectrum.
 
 Extract the archive and follow the [installation instructions](installation.md) and
 [first simulation](getting-started.md).
 See [Citing PEACOCK](citing.md) for the software and paper references.
 
-## Archived release
+## Earlier versions
+
+{download}`PEACOCK 1.0.1 source (ZIP) <assets/PEACOCK-1.0.1.zip>` supplies the previous tutorial configuration.
 
 The original **PEACOCK 1.0** is preserved on
 [Zenodo](https://doi.org/10.5281/zenodo.24206426). This DOI identifies the original 1.0
