@@ -1,9 +1,11 @@
 (getting-started)=
-# Run your first C II simulation
+(run-your-first-c-ii-simulation)=
+# Run your first PEACOCK simulation
 
-Use PEACOCK to follow photons through a clumpy wind and plot the C II spectrum
-that emerges. Choose a CPU or an NVIDIA GPU. Both use the same cloud catalogue,
-model configuration and plotting tool.
+Choose a spectral line, follow photons through a clumpy wind and plot the
+spectrum that emerges. This tutorial uses C II as an example. You can run it
+on a CPU or an NVIDIA GPU with the same wind configuration, clump catalogue
+and plotting tool.
 
 (installation-source)=
 (installation-dependencies)=
@@ -25,7 +27,7 @@ python3 peacock.py lines
 
 In Windows PowerShell, use `.\.venv\Scripts\python.exe peacock.py lines`.
 
-Choose `CII1334` to follow the C II transitions near 1334 and 1335 Å together.
+For this example, choose `CII1334` to follow the C II transitions near 1334 and 1335 Å together.
 PEACOCK loads their atomic data and scattering rules for you. Once you have built the
 CPU or GPU program, you can use the same program to [run another supported line](choosing-a-line-and-an-observable.md).
 

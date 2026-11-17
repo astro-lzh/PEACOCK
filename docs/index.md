@@ -12,7 +12,7 @@ PEACOCK (Profiles of Emission and Absorption from Clumpy Outflows with Complex K
 ```
 
 1. [Download and install PEACOCK](installation.md) on Linux, macOS or Windows.
-2. [Run the C II tutorial](getting-started.md) to simulate light passing through a wind and plot the spectrum that escapes.
+2. [Run your first PEACOCK simulation](getting-started.md) and plot the emergent spectrum using C II as an example.
 3. [Choose a line and an observable](choosing-a-line-and-an-observable.md) to try another transition or see how the same wind looks through a smaller aperture.
 
 (overview-research)=

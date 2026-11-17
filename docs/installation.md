@@ -57,7 +57,7 @@ python3 -m pip install numpy scipy matplotlib
 If Xcode reports that its command-line tools are already installed, continue with the
 Homebrew command. PEACOCK finds GSL through the `gsl-config` program installed by Homebrew.
 
-Continue with [your first C II simulation on the CPU](getting-started.md#cpu).
+Continue with [your first PEACOCK simulation on the CPU](getting-started.md#cpu).
 
 (install-windows)=
 ## Windows
