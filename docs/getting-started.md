@@ -115,17 +115,50 @@ velocity relative to C II 1334.53 Å, with blueshift to the left and redshift to
 the right. The accompanying `spectrum.csv` gives the values in each velocity bin,
 and `spectrum.json` records how they were plotted.
 
-```{figure} assets/research/cii-100k-v150-spectrum.png
-:alt: C II spectrum from the tutorial run, with velocity on the horizontal axis and flux relative to the injected continuum on the vertical axis.
+```{figure} assets/research/cii-100k-v150-spectrum-ymin06.png
+:name: cii-tutorial-spectrum
+:alt: C II tutorial spectrum with the flux axis starting at 0.6. The blue absorption trough reaches about 0.70 near −150 km/s.
 :width: 100%
 
 The deepest absorption in the CPU run is near −150 km/s, where the flux is about
 70% of the incident continuum. Each clump has a center-to-edge ground-level C II
 column of $5\times10^{14}\,\mathrm{cm}^{-2}$ and $n_2/n_1=0.1$. The shaded band
 shows the approximate uncertainty from sampling a finite number of photons.
+The vertical axis starts at 0.6 to show the shape of the trough.
 ```
 
 {download}`Download the reference spectrum with flux, packet counts and sampling uncertainties (CSV) <assets/research/cii-100k-v150-spectrum.csv>`
+
+```{raw} html
+<details><summary>Set the lower flux limit to 0.6 in your own plot</summary>
+```
+
+The 1.0.4 plotting command starts the flux axis at zero. To reproduce the
+close-up above, run this Python example from the source directory after making
+`spectrum.csv`. It saves `spectrum-zoom.png` in your run directory.
+
+```python
+from pathlib import Path
+import matplotlib.pyplot as plt
+import numpy as np
+
+run = Path("run/cii")  # Use "run/cii-cuda" for the GPU example.
+s = np.genfromtxt(run / "spectrum.csv", delimiter=",", names=True)
+edges = np.r_[s["bin_left_km_s"], s["bin_right_km_s"][-1]]
+fig, ax = plt.subplots(layout="constrained")
+ax.stairs(s["flux"], edges, baseline=None, color="#176776")
+ax.fill_between(s["velocity_km_s"], s["flux"] - s["mc_sigma"],
+                s["flux"] + s["mc_sigma"], step="mid", color="#176776", alpha=0.15)
+ax.axhline(1, color="gray", linestyle="--", linewidth=1)
+ax.set(xlim=(edges[0], edges[-1]), ylim=(0.6, None),
+       xlabel="Velocity relative to C II 1334.53 Å (km/s)", ylabel="Flux / injected continuum")
+fig.savefig(run / "spectrum-zoom.png", dpi=180)
+plt.close(fig)
+```
+
+```{raw} html
+</details>
+```
 
 Independent runs sample different photon paths. When comparing CPU and GPU spectra, use
 the same bins and aperture and compare any difference with the sampling uncertainties.
